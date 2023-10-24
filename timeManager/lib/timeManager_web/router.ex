@@ -21,9 +21,13 @@ defmodule TimeManagerWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", TimeManagerWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", TimeManagerWeb do
+    pipe_through :api
+
+    resources "/users", UsersController, except: [:new, :edit]
+    resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
+    resources "/clocks", ClockController, except: [:new, :edit]
+  end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
   if Application.compile_env(:timeManager, :dev_routes) do

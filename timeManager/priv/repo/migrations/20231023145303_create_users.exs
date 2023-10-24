@@ -4,7 +4,7 @@ defmodule TimeManager.Repo.Migrations.CreateUsers do
   def change do
     create table(:users) do
       add :username, :string
-      add :email, :integer
+      add :email, :string
 
       timestamps(type: :utc_datetime)
     end

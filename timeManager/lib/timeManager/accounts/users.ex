@@ -4,7 +4,7 @@ defmodule TimeManager.Accounts.Users do
 
   schema "users" do
     field :username, :string
-    field :email, :integer
+    field :email, :string
 
     timestamps(type: :utc_datetime)
   end

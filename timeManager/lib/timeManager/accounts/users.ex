@@ -17,4 +17,5 @@ defmodule TimeManager.Accounts.Users do
     |> validate_format(:email, ~r/^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,4}$/)
     |> unique_constraint(:email)
   end
+
 end

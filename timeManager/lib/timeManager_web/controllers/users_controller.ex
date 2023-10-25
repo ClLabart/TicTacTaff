@@ -1,6 +1,5 @@
 defmodule TimeManagerWeb.UsersController do
   use TimeManagerWeb, :controller
-  import Logger
 
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users

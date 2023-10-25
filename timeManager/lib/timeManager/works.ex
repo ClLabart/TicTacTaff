@@ -22,6 +22,65 @@ defmodule TimeManager.Works do
   end
 
   @doc """
+  Returns the list of workingtimes by user.
+
+  ## Examples
+
+      iex> list_workingtimes_by_user()
+      [%WorkingTime{}, ...]
+  """
+  def list_workingtimes_by_user(id) do
+    query = from w in WorkingTime,
+      where: w.user == ^id
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a user based on the start time.
+
+  ## Example
+
+      iex> list_workingtimes_by_user_start(1, ~U[2022-01-01 09:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_user_start(id, start) do
+    query = from w in WorkingTime,
+      where: w.user == ^id and w.start >= ^start
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a user based on the end time.
+
+  ## Example
+
+      iex> list_workingtimes_by_user_end(1, ~U[2022-01-01 17:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_user_end(id, endV) do
+    query = from w in WorkingTime,
+      where: w.user == ^id and w.end <= ^endV
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a user based on the start and end times.
+
+  ## Example
+
+      iex> list_workingtimes_by_user_start_end(1, ~U[2022-01-01 09:00:00Z], ~U[2022-01-01 17:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_user_start_end(id, start, endV) do
+    query = from w in WorkingTime,
+      where: w.user == ^id and w.start >= ^start and w.end <= ^endV
+    Repo.all(query)
+  end
+
+  @doc """
   Gets a single working_time.
 
   Raises `Ecto.NoResultsError` if the Working time does not exist.
@@ -36,6 +95,12 @@ defmodule TimeManager.Works do
 
   """
   def get_working_time!(id), do: Repo.get!(WorkingTime, id)
+
+  def get_working_time_by_user(userId, id) do
+    query = from w in WorkingTime,
+      where: w.user == ^userId and w.id == ^id
+    Repo.one(query)
+  end
 
   @doc """
   Creates a working_time.
@@ -52,6 +117,25 @@ defmodule TimeManager.Works do
   def create_working_time(attrs \\ %{}) do
     %WorkingTime{}
     |> WorkingTime.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Creates a working_time by user.
+
+  ## Examples
+
+      iex> create_working_time_by_user(%{field: value})
+      {:ok, %WorkingTime{}}
+
+      iex> create_working_time_by_user(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_working_time_by_user(attrs \\ %{}, id) do
+    %WorkingTime{}
+    |> WorkingTime.changeset(attrs)
+    |> Ecto.Changeset.put_change(:user, String.to_integer(id))
     |> Repo.insert()
   end
 

@@ -22,6 +22,20 @@ defmodule TimeManager.Hours do
   end
 
   @doc """
+  Returns the list of clocks by a user.
+
+  ## Examples
+
+      iex> list_clocks()
+      [%Clock{}, ...]
+
+  """
+  def get_clock_by_user!(id) do
+    query = from c in Clock, where: c.user == ^id
+    Repo.all(query)
+  end
+
+  @doc """
   Gets a single clock.
 
   Raises `Ecto.NoResultsError` if the Clock does not exist.

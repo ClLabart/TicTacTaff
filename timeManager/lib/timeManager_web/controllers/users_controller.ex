@@ -1,13 +1,33 @@
 defmodule TimeManagerWeb.UsersController do
   use TimeManagerWeb, :controller
+  import Logger
 
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users
   action_fallback(TimeManagerWeb.FallbackController)
 
-  def index(conn, %{"email" => email, "username" => username} =  _params) do
+  def index(conn, params) do
     users = Accounts.list_users()
-    filtered_users = Enum.filter(users, fn user -> user.username == username and user.email == email end)
+
+    filtered_users =
+      case {Map.get(params, "username"), Map.get(params, "email")} do
+
+        {nil, nil} ->
+          users
+
+        {username, nil} ->
+          Enum.filter(users, fn user -> user.username == username end)
+
+        {nil, email} ->
+          Enum.filter(users, fn user -> user.email == email end)
+
+        {username, email} ->
+          Enum.filter(users, fn user -> user.username == username && user.email == email end)
+
+        _ ->
+          users
+      end
+
     render(conn, :index, users: filtered_users)
   end
 
@@ -23,19 +43,6 @@ defmodule TimeManagerWeb.UsersController do
   def show(conn, %{"id" => id}) do
     users = Accounts.get_users!(id)
     render(conn, :show, users: users)
-  end
-
-  def find_by_email_and_username(conn, %{"email" => email, "username" => username} = _params) do
-    # On récupère la liste de tout les utilisateurs
-    users = Accounts.list_users()
-    # On vérifie que les paramètres email et username ne sont pas null
-    if email != nil and username != nil do
-    # On filtre la liste des utilisateurs en fonction des paramètres email et username
-    filtered_users =
-      Enum.filter(users, fn user -> user.username == username and user.email == email end)
-    # On retourne la liste des utilisateurs filtrés
-    render(conn, :index, users: filtered_users)
-    end
   end
 
   def update(conn, %{"id" => id, "users" => users_params}) do

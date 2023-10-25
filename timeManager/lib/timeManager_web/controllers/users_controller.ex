@@ -3,8 +3,7 @@ defmodule TimeManagerWeb.UsersController do
 
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users
-
-  action_fallback TimeManagerWeb.FallbackController
+  action_fallback(TimeManagerWeb.FallbackController)
 
   def index(conn, _params) do
     users = Accounts.list_users()
@@ -23,6 +22,19 @@ defmodule TimeManagerWeb.UsersController do
   def show(conn, %{"id" => id}) do
     users = Accounts.get_users!(id)
     render(conn, :show, users: users)
+  end
+
+  def find_by_email_and_username(conn, %{"email" => email, "username" => username} = _params) do
+    # On récupère la liste de tout les utilisateurs
+    users = Accounts.list_users()
+    # On vérifie que les paramètres email et username ne sont pas null
+    if email != nil and username != nil do
+    # On filtre la liste des utilisateurs en fonction des paramètres email et username
+    filtered_users =
+      Enum.filter(users, fn user -> user.username == username and user.email == email end)
+    # On retourne la liste des utilisateurs filtrés
+    render(conn, :index, users: filtered_users)
+    end
   end
 
   def update(conn, %{"id" => id, "users" => users_params}) do

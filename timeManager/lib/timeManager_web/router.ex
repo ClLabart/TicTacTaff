@@ -24,9 +24,14 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
-    resources "/users", UsersController, except: [:new, :edit]
+    # resources "/users", UsersController, except: [:new, :edit]
     resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
     resources "/clocks", ClockController, except: [:new, :edit]
+    # Récupération des utilisateurs
+    get "/users", UsersController, :index
+    # Récupération des utilisateurs par email et username
+    get "/users/test", UsersController, :find_by_email_and_username
+    
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

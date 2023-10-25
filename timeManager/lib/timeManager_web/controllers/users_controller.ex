@@ -5,9 +5,10 @@ defmodule TimeManagerWeb.UsersController do
   alias TimeManager.Accounts.Users
   action_fallback(TimeManagerWeb.FallbackController)
 
-  def index(conn, _params) do
+  def index(conn, %{"email" => email, "username" => username} =  _params) do
     users = Accounts.list_users()
-    render(conn, :index, users: users)
+    filtered_users = Enum.filter(users, fn user -> user.username == username and user.email == email end)
+    render(conn, :index, users: filtered_users)
   end
 
   def create(conn, %{"users" => users_params}) do

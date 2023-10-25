@@ -11,7 +11,6 @@ defmodule TimeManagerWeb.UsersController do
 
     filtered_users =
       case {Map.get(params, "username"), Map.get(params, "email")} do
-
         {nil, nil} ->
           users
 

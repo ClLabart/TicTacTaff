@@ -36,6 +36,12 @@ export default {
     UserComponent,
     workingTime,
     workingTimes
+  },
+
+  async mounted() {
+    const user = await fetch('http://localhost:4000/api/users/6'
+    ).then(res => res.json())
+    console.log('user', user)
   }
 }
 

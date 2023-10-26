@@ -1,4 +1,7 @@
 <template>
+  <h1 className="text-3xl font-bold underline test">
+      Hello world!
+    </h1>
   <LoginComponent
       v-if="!isConnected"
       @connected="isConnected()"
@@ -7,7 +10,6 @@
 </template>
 
 <script>
-
 import LoginComponent from "@/components/connexion/loginComponent.vue";
 import ConnectedComponent from "@/components/connexion/connectedComponent.vue";
 

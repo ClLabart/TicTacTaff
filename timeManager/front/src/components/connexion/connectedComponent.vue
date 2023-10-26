@@ -1,6 +1,6 @@
 <template>
   <NavbarComponent/>
-  <div>
+<!--  <div>
     hello world
   </div>
   <div>
@@ -8,16 +8,16 @@
   </div>
   <div>
     <WorkingTime />
-  </div>
+  </div>-->
   <div>
     <WorkingTimes />
   </div>
-  <div>
+<!--  <div>
     <ChartManager />
   </div>
   <div>
     <ClockManager />
-  </div>
+  </div>-->
 
 
 

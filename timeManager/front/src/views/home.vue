@@ -20,7 +20,7 @@ export default {
   computed: {
     ...mapGetters('user', ['isConnected']),
     connexion() {
-      return this.isConnected
+      return true
     }
   },
 }

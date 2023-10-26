@@ -23,10 +23,6 @@ export default {
       return this.isConnected
     }
   },
-
-  mounted () {
-    console.log('mounted', this.isConnected)
-  }
 }
 
 </script>

@@ -1,7 +1,6 @@
 defmodule TimeManagerWeb.WorkingTimeController do
   use TimeManagerWeb, :controller
 
-  import Logger
   alias TimeManager.Works
   alias TimeManager.Works.WorkingTime
 

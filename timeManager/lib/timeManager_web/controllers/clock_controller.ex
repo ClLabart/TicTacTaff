@@ -3,7 +3,6 @@ defmodule TimeManagerWeb.ClockController do
 
   alias TimeManager.Hours
   alias TimeManager.Hours.Clock
-  import Logger
 
   action_fallback(TimeManagerWeb.FallbackController)
 

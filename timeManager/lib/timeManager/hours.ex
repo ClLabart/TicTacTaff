@@ -4,6 +4,7 @@ defmodule TimeManager.Hours do
   """
 
   import Ecto.Query, warn: false
+  import Logger
   alias TimeManager.Repo
 
   alias TimeManager.Hours.Clock
@@ -19,6 +20,12 @@ defmodule TimeManager.Hours do
   """
   def list_clocks do
     Repo.all(Clock)
+  end
+
+  def find_user!(id) do
+    Logger.info(id)
+    query = from(c in Clock, where: c.user == ^id)
+    Repo.all(query)
   end
 
   @doc """
@@ -63,9 +70,10 @@ defmodule TimeManager.Hours do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_clock(attrs \\ %{}) do
+  def create_clock(attrs \\ %{}, id) do
     %Clock{}
     |> Clock.changeset(attrs)
+    |> Ecto.Changeset.put_change(:user, String.to_integer(id))
     |> Repo.insert()
   end
 

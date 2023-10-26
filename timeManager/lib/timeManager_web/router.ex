@@ -30,6 +30,10 @@ defmodule TimeManagerWeb.Router do
     get "/workingtimes/:userId/:id" , WorkingTimeController, :show_by_user_id
     post "/workingtimes/:userId", WorkingTimeController, :create_by_user
     resources "/clocks", ClockController, except: [:new, :edit]
+    # Récupération des pointages par un utilisateur (id)
+    get "/clocks/:id", ClockController, :show
+    # Création d'un pointage pour un utilisateur (id)
+    post "/clocks/:id", ClockController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

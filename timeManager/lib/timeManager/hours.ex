@@ -21,6 +21,25 @@ defmodule TimeManager.Hours do
     Repo.all(Clock)
   end
 
+  def find_user!(id) do
+    query = from(c in Clock, where: c.user == ^id)
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns the list of clocks by a user.
+
+  ## Examples
+
+      iex> list_clocks()
+      [%Clock{}, ...]
+
+  """
+  def get_clock_by_user!(id) do
+    query = from c in Clock, where: c.user == ^id
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single clock.
 
@@ -49,9 +68,10 @@ defmodule TimeManager.Hours do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_clock(attrs \\ %{}) do
+  def create_clock(attrs \\ %{}, id) do
     %Clock{}
     |> Clock.changeset(attrs)
+    |> Ecto.Changeset.put_change(:user, String.to_integer(id))
     |> Repo.insert()
   end
 

@@ -24,14 +24,16 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
-    # resources "/users", UsersController, except: [:new, :edit]
-    resources "/workingtimes", WorkingTimeController, except: [:new, :edit]
+    resources "/users", UsersController, except: [:new, :edit]
+    resources "/workingtimes", WorkingTimeController, except: [:index, :show, :new, :edit]
+    get "/workingtimes/:userId", WorkingTimeController, :show_by_user
+    get "/workingtimes/:userId/:id" , WorkingTimeController, :show_by_user_id
+    post "/workingtimes/:userId", WorkingTimeController, :create_by_user
     resources "/clocks", ClockController, except: [:new, :edit]
-    # Récupération des utilisateurs
-    get "/users", UsersController, :index
-    # Récupération des utilisateurs par email et username
-    get "/users/test", UsersController, :find_by_email_and_username
-    
+    # Récupération des pointages par un utilisateur (id)
+    get "/clocks/:id", ClockController, :show
+    # Création d'un pointage pour un utilisateur (id)
+    post "/clocks/:id", ClockController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

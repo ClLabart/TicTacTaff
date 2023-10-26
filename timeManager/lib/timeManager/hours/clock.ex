@@ -3,9 +3,9 @@ defmodule TimeManager.Hours.Clock do
   import Ecto.Changeset
 
   schema "clocks" do
-    field :status, :boolean, default: false
-    field :time, :utc_datetime
-    field :user, :id
+    field(:status, :boolean, default: false)
+    field(:time, :utc_datetime)
+    field(:user, :id)
 
     timestamps(type: :utc_datetime)
   end

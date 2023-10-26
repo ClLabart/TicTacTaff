@@ -1,13 +1,13 @@
 <template>
   <div>
-    user
+    hreelo
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'UserComponent',
-
 }
 
 </script>

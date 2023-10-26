@@ -28,27 +28,34 @@
 </template>
 
 <script>
+
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   name: 'LoginComponent',
   data() {
     return {
       username: '',
-      email: '',
-      connected: false
+      email: ''
     }
   },
 
-  watch: {
-    connected() {
-      this.$emit('connected', this.connected)
+  computed : {
+    ...mapGetters('user', ['isConnected']),
+    connect () {
+      return this.isConnected
     }
   },
 
   methods: {
+    ...mapActions('user', ['updateConnection']),
     async connexion() {
-      const url = 'http://localhost:3000/api/users/test?' + 'email=' + this.username + '&username=' + this.email
-      const user = await fetch(url).then(res => res.json())
-      this.connected = !!user;
+      if (!this.connect) {
+        const url = 'http://localhost:4000/api/users?' + 'username=' + this.username + '&email=' + this.email
+        const user = await fetch(url).then(res => res.json())
+
+        await this.updateConnection(!!user)
+      }
     }
   }
 }

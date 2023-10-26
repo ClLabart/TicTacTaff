@@ -1,34 +1,31 @@
 <template>
-  <h1 className="text-3xl font-bold underline test">
-      Hello world!
-    </h1>
   <LoginComponent
-      v-if="!isConnected"
-      @connected="isConnected()"
+      v-if="!connexion"
   />
-  <ConnectedComponent v-if="isConnected" />
+  <ConnectedComponent v-if="connexion" />
 </template>
 
 <script>
 import LoginComponent from "@/components/connexion/loginComponent.vue";
 import ConnectedComponent from "@/components/connexion/connectedComponent.vue";
 
+import { mapGetters } from 'vuex'
 export default {
   name: 'HomePage',
   components: {
     LoginComponent,
     ConnectedComponent
   },
-  data() {
-    return {
-      connected: false
+
+  computed: {
+    ...mapGetters('user', ['isConnected']),
+    connexion() {
+      return this.isConnected
     }
   },
 
-  computed: {
-    isConnected() {
-      return this.connected
-    }
+  mounted () {
+    console.log('mounted', this.isConnected)
   }
 }
 

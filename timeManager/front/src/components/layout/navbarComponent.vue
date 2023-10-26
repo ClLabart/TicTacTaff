@@ -2,6 +2,7 @@
   <div>
     nav
   </div>
+
 </template>
 
 <script>

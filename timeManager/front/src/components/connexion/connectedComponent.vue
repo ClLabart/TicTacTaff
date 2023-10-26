@@ -1,10 +1,10 @@
 <template>
-  <NavbarComponent />
+  <NavbarComponent/>
   <div>
     hello world
   </div>
   <div>
-    <UserComponent />
+    <UserComponent/>
   </div>
   <div>
     <WorkingTime />
@@ -41,9 +41,7 @@ export default {
     UserComponent,
     WorkingTime,
     WorkingTimes,
-
   },
-
 
 }
 

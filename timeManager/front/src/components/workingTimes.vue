@@ -12,7 +12,7 @@
           {{ year }}
         </option>
       </select>
-      <bar-chart :chart-data="chartDataYear" :options="options" :key="selectedYear"/>
+      <bar-chart :chart-data="chartDataYear" :options="optionsForYear" />
     </div>
     <div class="flex-1 p-2">
       <select
@@ -23,7 +23,7 @@
           {{ month }}
         </option>
       </select>
-      <bar-chart :chart-data="chartDataMonth" :options="options" :key="selectedMonth"/>
+      <bar-chart :chart-data="chartDataMonth" :options="optionsForMonth" />
     </div>
   </div>
 </template>
@@ -61,22 +61,12 @@ export default {
           }
         ]
       },
-      options : {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales : {
-          y : {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Heures'
-            }
-          }
-        }
-      },
       selectedYear: new Date().getFullYear(),
       selectedMonth: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'][new Date().getMonth()],
-      dataLoaded: false
+      dataLoaded: false,
+      yearsHours: 0,
+      monthsHours: 0,
+      weeksHours: 0
     }
   },
 
@@ -121,12 +111,18 @@ export default {
     },
     monthNames() {
       return ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+    },
+    optionsForYear() {
+      return this.options('Heures travaillées en ' + this.selectedYear + ' : ' + this.yearsHours + 'h')
+    },
+    optionsForMonth() {
+      return this.options('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h')
     }
   },
 
   watch: {
     selectedMonth: {
-      handler(newValue, oldValue) {
+      handler() {
         this.chartDataForMonth.labels = this.weeksInSelectedMonth;
       },
       immediate: true
@@ -153,35 +149,47 @@ export default {
       const start = new Date(this.selectedYear, 0, 1)
       const end = new Date(this.selectedYear, 11, 31)
       const allTimes = await this.getWorkingTimes(start, end)
-      let hoursForYear = 0
       let allHoursOfMonth = []
       for (const element of allTimes.data) {
-        hoursForYear += this.estimationHours(element)
+        this.yearsHours += this.estimationHours(element)
       }
       for (let i = 0; i < this.chartDataYear.datasets[0].data.length; i++) {
         const startMonth = new Date(this.selectedYear, i, 1)
         const endMonth = new Date(this.selectedYear, i + 1, 0)
         allHoursOfMonth.push(await this.estimationHoursInMonth(startMonth, endMonth))
       }
-      this.chartDataForYear.datasets[0].data = allHoursOfMonth
-      return hoursForYear
+      this.chartDataForYear = {
+        ...this.chartDataForYear,
+        datasets: [
+          {
+            ...this.chartDataForYear.datasets[0],
+            data: allHoursOfMonth
+          }
+        ]
+      };
     },
     async getWorkingMonthTimes () {
       const start = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), 1)
       const end = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth) + 1, 0)
       const allTimes = await this.getWorkingTimes(start, end)
-      let hoursForMonth = 0
       let allHoursOfWeek = []
       for (const element of allTimes.data) {
-        hoursForMonth += this.estimationHours(element)
+        this.monthsHours += this.estimationHours(element)
       }
       for (let i = 0; i < this.weeksInSelectedMonth.length; i++) {
         const startWeek = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), i * 7 + 1)
         const endWeek = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), (i + 1) * 7)
         allHoursOfWeek.push(await this.estimationHoursInWeek(startWeek, endWeek))
       }
-      this.chartDataForMonth.datasets[0].data = allHoursOfWeek
-      return hoursForMonth
+      this.chartDataForMonth = {
+        ...this.chartDataForMonth,
+        datasets: [
+          {
+            ...this.chartDataForMonth.datasets[0],
+            data: allHoursOfWeek
+          }
+        ]
+      };
     },
     async estimationHoursInMonth (start, end) {
       const allTimes  = await this.getWorkingTimes(start, end)
@@ -203,6 +211,27 @@ export default {
       const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
       const endMoment = moment(data.end, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
       return (endMoment - startMoment) / 1000 / 60 / 60
+    },
+    options (title) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales : {
+          y : {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Heures'
+            }
+          }
+        },
+        plugins: {
+          title: {
+            display: true,
+            text: title
+          }
+        }
+      }
     }
   },
 

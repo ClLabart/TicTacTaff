@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import { Chart, BarController, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { Chart, BarController, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 
-Chart.register(BarController, CategoryScale, LinearScale, BarElement);
+Chart.register(BarController, CategoryScale, LinearScale, BarElement, Title);
 
 export default {
   name: 'BarChart',
@@ -30,6 +30,10 @@ export default {
     chartData: {
       handler: 'drawChart',
       deep: true,
+    },
+    options: {
+      handler: 'drawChart',
+      deep: true,
     }
   },
   mounted() {
@@ -39,6 +43,9 @@ export default {
     drawChart() {
       if (this.myChart) {
         this.myChart.destroy();
+      }
+      if (!this.$refs.chartCanvas) {
+        return;
       }
       this.myChart = new Chart(this.$refs.chartCanvas, {
         type: 'bar',

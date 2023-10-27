@@ -27,8 +27,10 @@ export default {
     }
   },
   watch: {
-    chartData: 'drawChart',
-    options: 'drawChart'
+    chartData: {
+      handler: 'drawChart',
+      deep: true,
+    }
   },
   mounted() {
     this.drawChart();

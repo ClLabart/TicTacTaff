@@ -26,20 +26,20 @@
 
 <script>
 import NavbarComponent from '@/components/layout/navbarComponent.vue'
-import ChartManager from "@/components/chartManager.vue";
+/*import ChartManager from "@/components/chartManager.vue";
 import ClockManager from "@/components/clockManager.vue";
 import UserComponent from "@/components/userComponent.vue";
-import WorkingTime from "@/components/workingTime.vue";
+import WorkingTime from "@/components/workingTime.vue";*/
 import WorkingTimes from "@/components/workingTimes.vue";
 
 export default {
   name: 'ConnectedComponent',
   components: {
     NavbarComponent,
-    ChartManager,
+    /*ChartManager,
     ClockManager,
     UserComponent,
-    WorkingTime,
+    WorkingTime,*/
     WorkingTimes,
   },
 

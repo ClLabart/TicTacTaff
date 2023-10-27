@@ -13,12 +13,13 @@
   </div>
 
   <div>
-    <bar-chart :chart-data="chartData" :options="options" />
+    <bar-chart :chart-data="chartDataComputed" :options="options" />
   </div>
 </template>
 
 <script>
 import BarChart from "@/components/graphs/barChart.vue";
+import moment from 'moment'
 
 export default {
   name: 'WorkingTimes',
@@ -35,11 +36,11 @@ export default {
           {
             label: "Data One",
             backgroundColor: "#f87979",
-            data: [40, 39, 10, 40, 39, 80, 40, 10, 23, 34, 45, 67]
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ]
       },
-      options: {
+      options : {
         responsive: true,
         maintainAspectRatio: false,
         scales : {
@@ -65,12 +66,15 @@ export default {
         years.push(currentYear - i)
       }
       return years
+    },
+    chartDataComputed () {
+      return this.chartData
     }
   },
 
   methods: {
     formatDateToSQL(date) {
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+      return moment(date).format('YYYY-MM-DDTHH:mm:ss');
     },
     async getWorkingTimes (start, end) {
       start = this.formatDateToSQL(start)
@@ -78,16 +82,26 @@ export default {
       const url = 'http://localhost:4000/api/workingtimes/3?' + 'start=' + start + '&end=' + end
       return await fetch(url).then(res => res.json())
     },
-    getWorkingYearTimes () {
+    async getWorkingYearTimes () {
       const start = new Date(this.selectedYear, 0, 1)
       const end = new Date(this.selectedYear, 11, 31)
-      this.getWorkingTimes(start, end)
+      await this.getWorkingTimes(start, end)
     },
-    getWorkingMonthTimes () {
+    async getWorkingMonthTimes () {
       const index = this.chartData.labels.indexOf(this.selectedMonth)
       const start = new Date(this.selectedYear, index, 1)
       const end = new Date(this.selectedYear, index + 1, 0)
-      this.getWorkingTimes(start, end)
+      const allTimes  = await this.getWorkingTimes(start, end)
+      let hours = 0
+      for (const element of allTimes.data) {
+        hours += this.estimationHours(element)
+      }
+      this.chartData.datasets[0].data[index] = hours
+    },
+    estimationHours (data) {
+      const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
+      const endMoment = moment(data.end, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
+      return (endMoment - startMoment) / 1000 / 60 / 60
     }
   },
 

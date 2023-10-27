@@ -1,12 +1,8 @@
 <template>
-  <h1 className="text-3xl font-bold underline test">
-      Hello world!
-    </h1>
-  <LoginComponent
-      v-if="!isConnected"
-      @connected="isConnected()"
-  />
-  <ConnectedComponent v-if="isConnected" />
+  <div class="homeDiv">
+      <LoginComponent v-if="!isConnected" @connected="connectedMethod" />
+      <ConnectedComponent v-if="isConnected" />
+  </div>
 </template>
 
 <script>
@@ -14,26 +10,33 @@ import LoginComponent from "@/components/connexion/loginComponent.vue";
 import ConnectedComponent from "@/components/connexion/connectedComponent.vue";
 
 export default {
-  name: 'HomePage',
+  name: "HomePage",
   components: {
     LoginComponent,
     ConnectedComponent
   },
   data() {
     return {
-      connected: false
-    }
+      connected: true,
+    };
   },
 
   computed: {
     isConnected() {
-      return this.connected
-    }
-  }
-}
+      return this.connected;
+    },
+  },
 
+  methods: {
+    connectedMethod(value) {
+      this.connected = value;
+    },
+  },
+};
 </script>
 
 <style scoped>
-
+.homeDiv {
+  height: 100%;
+}
 </style>

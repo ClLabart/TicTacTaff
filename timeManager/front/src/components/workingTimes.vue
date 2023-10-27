@@ -6,14 +6,14 @@
       </option>
     </select>
     <select v-model="selectedMonth" @change="getWorkingMonthTimes()">
-      <option v-for="(month, indexMonth) in chartData.labels" :key="indexMonth">
+      <option v-for="(month, indexMonth) in chartDataYear.labels" :key="indexMonth">
         {{ month }}
       </option>
     </select>
   </div>
 
-  <div>
-    <bar-chart :chart-data="chartDataComputed" :options="options" />
+  <div v-if="dataLoaded">
+    <bar-chart :chart-data="chartDataYear" :options="options" />
   </div>
 </template>
 
@@ -29,7 +29,7 @@ export default {
 
   data() {
     return {
-      chartData: {
+      chartDataForYear: {
         labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
           'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
         datasets: [
@@ -54,7 +54,8 @@ export default {
         }
       },
       selectedYear: new Date().getFullYear(),
-      selectedMonth: new Date().getMonth(),
+      selectedMonth: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'][new Date().getMonth()],
+      dataLoaded: false
     }
   },
 
@@ -67,9 +68,14 @@ export default {
       }
       return years
     },
-    chartDataComputed () {
-      return this.chartData
+    chartDataYear () {
+      return this.chartDataForYear
     }
+  },
+
+  async mounted () {
+  await this.getWorkingYearTimes()
+  this.dataLoaded = true
   },
 
   methods: {
@@ -91,12 +97,14 @@ export default {
       for (const element of allTimes.data) {
         hoursForYear += this.estimationHours(element)
       }
-      for (let i = 0; i < this.chartData.datasets[0].data.length; i++) {
+      for (let i = 0; i < this.chartDataYear.datasets[0].data.length; i++) {
         const startMonth = new Date(this.selectedYear, i, 1)
         const endMonth = new Date(this.selectedYear, i + 1, 0)
         allHoursOfMonth.push(await this.estimationHoursInMonth(startMonth, endMonth))
       }
-      this.chartData.datasets[0].data = allHoursOfMonth
+      this.chartDataForYear.datasets[0].data = allHoursOfMonth
+    },
+    async getWorkingMonthTimes () {
     },
     async estimationHoursInMonth (start, end) {
       const allTimes  = await this.getWorkingTimes(start, end)

@@ -46,9 +46,11 @@ export default {
 
   methods: {
     async connexion() {
-      const url = 'http://localhost:3000/api/users/test?' + 'email=' + this.username + '&username=' + this.email
+      const url = 'http://localhost:4000/api/users' + '?username=' + this.username + '&email=' + this.email
       const user = await fetch(url).then(res => res.json())
+
       this.connected = !!user;
+      console.log('connected', this.connected)
     }
   }
 }

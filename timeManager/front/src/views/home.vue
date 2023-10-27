@@ -1,10 +1,7 @@
 <template>
-  <h1 className="text-3xl font-bold underline test">
-      Hello world!
-    </h1>
   <LoginComponent
       v-if="!isConnected"
-      @connected="isConnected()"
+      @connected="connectedMethod"
   />
   <ConnectedComponent v-if="isConnected" />
 </template>
@@ -21,7 +18,7 @@ export default {
   },
   data() {
     return {
-      connected: false
+      connected: true
     }
   },
 
@@ -29,11 +26,17 @@ export default {
     isConnected() {
       return this.connected
     }
+  },
+
+  methods : {
+    connectedMethod (value) {
+      this.connected = value
+    }
   }
 }
 
 </script>
 
 <style scoped>
-
+  
 </style>

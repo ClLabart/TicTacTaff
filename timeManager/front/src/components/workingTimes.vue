@@ -85,18 +85,26 @@ export default {
     async getWorkingYearTimes () {
       const start = new Date(this.selectedYear, 0, 1)
       const end = new Date(this.selectedYear, 11, 31)
-      await this.getWorkingTimes(start, end)
-    },
-    async getWorkingMonthTimes () {
-      const index = this.chartData.labels.indexOf(this.selectedMonth)
-      const start = new Date(this.selectedYear, index, 1)
-      const end = new Date(this.selectedYear, index + 1, 0)
-      const allTimes  = await this.getWorkingTimes(start, end)
-      let hours = 0
+      const allTimes = await this.getWorkingTimes(start, end)
+      let hoursForYear = 0
+      let allHoursOfMonth = []
       for (const element of allTimes.data) {
-        hours += this.estimationHours(element)
+        hoursForYear += this.estimationHours(element)
       }
-      this.chartData.datasets[0].data[index] = hours
+      for (let i = 0; i < this.chartData.datasets[0].data.length; i++) {
+        const startMonth = new Date(this.selectedYear, i, 1)
+        const endMonth = new Date(this.selectedYear, i + 1, 0)
+        allHoursOfMonth.push(await this.estimationHoursInMonth(startMonth, endMonth))
+      }
+      this.chartData.datasets[0].data = allHoursOfMonth
+    },
+    async estimationHoursInMonth (start, end) {
+      const allTimes  = await this.getWorkingTimes(start, end)
+      let hoursForMonth = 0
+      for (const element of allTimes.data) {
+        hoursForMonth += this.estimationHours(element)
+      }
+      return hoursForMonth
     },
     estimationHours (data) {
       const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()

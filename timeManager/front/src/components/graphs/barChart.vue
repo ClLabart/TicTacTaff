@@ -31,7 +31,6 @@ export default {
   },
 
   beforeUpdate() {
-    console.log('beforeUpdate', this.chart)
     this.updateChartData();
   },
 
@@ -50,14 +49,9 @@ export default {
 
     updateChartData() {
       if (!this.myChart) return;
-
-      // Mettez à jour les données et les options
       this.myChart.data.labels = JSON.parse(JSON.stringify(this.chart.data.labels));
       this.myChart.data.datasets = JSON.parse(JSON.stringify(this.chart.data.datasets));
       this.myChart.options = JSON.parse(JSON.stringify(this.chart.options));
-
-
-      // Redessinez le graphique
       this.myChart.update();
     }
   }

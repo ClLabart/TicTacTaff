@@ -75,18 +75,23 @@ export default {
       while (currentDate.month() === monthIndex) {
         let startOfWeek = currentDate.clone().startOf('week');
         let endOfWeek = currentDate.clone().endOf('week');
+        const weekNumber = currentDate.week();
+
         if(startOfWeek.month() !== monthIndex) {
           startOfWeek = currentDate;
         }
         if(endOfWeek.month() !== monthIndex) {
           endOfWeek = currentDate.clone().endOf('month');
         }
+
+        let weekStr = `Semaine ${weekNumber} - `;
+
         if(startOfWeek.month() !== monthIndex && endOfWeek.month() === monthIndex) {
-          weeks.push(`Semaine du ${startOfWeek.date()} ${this.monthNames[startOfWeek.month()]} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
+          weeks.push(weekStr + `du ${startOfWeek.date()} ${this.monthNames[startOfWeek.month()]} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
         } else if (startOfWeek.month() === monthIndex && endOfWeek.month() !== monthIndex) {
-          weeks.push(`Semaine du ${startOfWeek.date()} ${this.monthNames[monthIndex]} au ${endOfWeek.date()} ${this.monthNames[endOfWeek.month()]}`);
+          weeks.push(weekStr + `du ${startOfWeek.date()} ${this.monthNames[monthIndex]} au ${endOfWeek.date()} ${this.monthNames[endOfWeek.month()]}`);
         } else {
-          weeks.push(`Semaine du ${startOfWeek.date()} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
+          weeks.push(weekStr + `du ${startOfWeek.date()} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
         }
         currentDate.add(1, 'week');
       }

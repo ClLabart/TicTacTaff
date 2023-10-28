@@ -6,52 +6,59 @@
 
 <script>
 import { Chart, BarController, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
+import {shallowRef} from "vue";
 
 Chart.register(BarController, CategoryScale, LinearScale, BarElement, Title);
 
 export default {
   name: 'BarChart',
+
   props: {
-    chartData: {
+    chart: {
       type: Object,
       required: true
     },
-    options: {
-      type: Object,
-      required: true
-    }
   },
+
   data() {
     return {
       myChart: null
     }
   },
-  watch: {
-    chartData: {
-      handler: 'drawChart',
-      deep: true,
-    },
-    options: {
-      handler: 'drawChart',
-      deep: true,
-    }
-  },
+
   mounted() {
-    this.drawChart();
+    this.initializeChart();
   },
+
+  beforeUpdate() {
+    console.log('beforeUpdate', this.chart)
+    this.updateChartData();
+  },
+
   methods: {
-    drawChart() {
-      if (this.myChart) {
-        this.myChart.destroy();
-      }
-      if (!this.$refs.chartCanvas) {
-        return;
-      }
-      this.myChart = new Chart(this.$refs.chartCanvas, {
-        type: 'bar',
-        data: this.chartData,
-        options: this.options
-      });
+    initializeChart() {
+      if (!this.$refs.chartCanvas) return;
+
+      this.myChart = shallowRef(
+          new Chart(this.$refs.chartCanvas, {
+            type: 'bar',
+            data: this.chart.data,
+            options: this.chart.options
+          })
+      );
+    },
+
+    updateChartData() {
+      if (!this.myChart) return;
+
+      // Mettez à jour les données et les options
+      this.myChart.data.labels = JSON.parse(JSON.stringify(this.chart.data.labels));
+      this.myChart.data.datasets = JSON.parse(JSON.stringify(this.chart.data.datasets));
+      this.myChart.options = JSON.parse(JSON.stringify(this.chart.options));
+
+
+      // Redessinez le graphique
+      this.myChart.update();
     }
   }
 }

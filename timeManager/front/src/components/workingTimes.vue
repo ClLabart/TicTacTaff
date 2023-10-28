@@ -12,7 +12,13 @@
           {{ year }}
         </option>
       </select>
-      <bar-chart :chart-data="chartDataForYear" :options="optionsForYear" />
+      <div v-if="loading">
+        chargement en cours...
+      </div>
+      <div v-if="error">
+        une erreur est survenue : {{ error }}
+      </div>
+      <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
     </div>
     <div class="flex-1 p-2">
       <select
@@ -23,7 +29,7 @@
           {{ month }}
         </option>
       </select>
-      <bar-chart :chart-data="chartDataForMonth" :options="optionsForMonth" />
+      <bar-chart :chart="chartDataForMonth"  />
     </div>
   </div>
 </template>
@@ -47,7 +53,9 @@ export default {
       monthsHours: 0,
       weeksHours: 0,
       allHoursOfMonth: [],
-      allHoursOfWeek: []
+      allHoursOfWeek: [],
+      loading: false,
+      error: null
     }
   },
 
@@ -87,118 +95,111 @@ export default {
     monthNames() {
       return ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
     },
-    optionsForYear() {
-      return this.options('Heures travaillées en ' + this.selectedYear + ' : ' + this.yearsHours + 'h')
-    },
-    optionsForMonth() {
-      return this.options('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h')
-    },
     chartDataForYear() {
-      return this.chartData('year', this.monthNames, this.allHoursOfMonth)
+      return this.chart('Heures travaillées en ' + this.selectedYear + ' : ' + this.yearsHours + 'h', this.monthNames, this.allHoursOfMonth)
     },
     chartDataForMonth() {
-      return this.chartData('month', this.weeksInSelectedMonth, this.allHoursOfWeek)
+      return this.chart('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h', this.weeksInSelectedMonth, this.allHoursOfWeek)
     }
   },
 
   async mounted () {
     await this.getWorkingYearTimes()
-    await this.getWorkingMonthTimes()
-    this.dataLoaded = true
   },
 
   methods: {
     formatDateToSQL(date) {
       return moment(date).format('YYYY-MM-DDTHH:mm:ss');
     },
-    async getWorkingTimes (start, end) {
-      start = this.formatDateToSQL(start)
-      end = this.formatDateToSQL(end)
-      const url = 'http://localhost:4000/api/workingtimes/3?' + 'start=' + start + '&end=' + end
-      return await fetch(url).then(res => res.json())
-    },
-    async getWorkingYearTimes () {
-      const start = new Date(this.selectedYear, 0, 1)
-      const end = new Date(this.selectedYear, 11, 31)
-      const allTimes = await this.getWorkingTimes(start, end)
-      let allHoursOfMonth = []
-      for (const element of allTimes.data) {
-        this.yearsHours += this.estimationHours(element)
+    async getWorkingTimes(start, end) {
+      start = this.formatDateToSQL(start);
+      end = this.formatDateToSQL(end);
+      this.loading = true;
+      const url = `http://localhost:4000/api/workingtimes/3?start=${start}&end=${end}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        this.loading = false;
+        return data.data;
+      } catch (e) {
+        this.loading = false;
+        this.error = e;
       }
+    },
+    estimationHours(data) {
+      const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf();
+      const endMoment = moment(data.end, 'YYYY-MM-DDTHH:mm:ssZ').valueOf();
+      const result = (endMoment - startMoment) / 1000 / 60 / 60;
+      return parseFloat(result.toFixed(2));
+    },
+    async calculateHoursForPeriod(start, end) {
+      const allTimes = await this.getWorkingTimes(start, end);
+      return allTimes.reduce((sum, time) => sum + this.estimationHours(time), 0);
+    },
+    async getWorkingYearTimes() {
+      this.dataLoaded = false;
+      const start = new Date(this.selectedYear, 0, 1);
+      const end = new Date(this.selectedYear, 11, 31);
+      this.yearsHours = await this.calculateHoursForPeriod(start, end);
+
+      const promises = [];
       for (let i = 0; i < 11; i++) {
-        const startMonth = new Date(this.selectedYear, i, 1)
-        const endMonth = new Date(this.selectedYear, i + 1, 0)
-        allHoursOfMonth.push(await this.estimationHoursInMonth(startMonth, endMonth))
+        const startMonth = new Date(this.selectedYear, i, 1);
+        const endMonth = new Date(this.selectedYear, i + 1, 0);
+        promises.push(this.calculateHoursForPeriod(startMonth, endMonth));
       }
-      this.allHoursOfMonth = allHoursOfMonth
+      this.allHoursOfMonth = await Promise.all(promises);
+      await this.getWorkingMonthTimes();
+      this.dataLoaded = true;
     },
-    async getWorkingMonthTimes () {
-      const start = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), 1)
-      const end = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth) + 1, 0)
-      const allTimes = await this.getWorkingTimes(start, end)
-      let allHoursOfWeek = []
-      for (const element of allTimes.data) {
-        this.monthsHours += this.estimationHours(element)
-      }
+    async getWorkingMonthTimes() {
+      this.dataLoaded = false;
+      const monthIndex = this.monthNames.indexOf(this.selectedMonth);
+      const start = new Date(this.selectedYear, monthIndex, 1);
+      const end = new Date(this.selectedYear, monthIndex + 1, 0);
+      this.monthsHours = await this.calculateHoursForPeriod(start, end);
+
+      const promises = [];
       for (let i = 0; i < this.weeksInSelectedMonth.length; i++) {
-        const startWeek = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), i * 7 + 1)
-        const endWeek = new Date(this.selectedYear, this.monthNames.indexOf(this.selectedMonth), (i + 1) * 7)
-        allHoursOfWeek.push(await this.estimationHoursInWeek(startWeek, endWeek))
+        const startWeek = new Date(this.selectedYear, monthIndex, i * 7 + 1);
+        const endWeek = new Date(this.selectedYear, monthIndex, (i + 1) * 7);
+        promises.push(this.calculateHoursForPeriod(startWeek, endWeek));
       }
-      this.allHoursOfWeek = allHoursOfWeek
+      this.allHoursOfWeek = await Promise.all(promises);
+      this.dataLoaded = true;
     },
-    async estimationHoursInMonth (start, end) {
-      const allTimes  = await this.getWorkingTimes(start, end)
-      let hoursForMonth = 0
-      for (const element of allTimes.data) {
-        hoursForMonth += this.estimationHours(element)
-      }
-      return hoursForMonth
-    },
-    async estimationHoursInWeek (start, end) {
-      const allTimes  = await this.getWorkingTimes(start, end)
-      let hoursForWeek = 0
-      for (const element of allTimes.data) {
-        hoursForWeek += this.estimationHours(element)
-      }
-      return hoursForWeek
-    },
-    estimationHours (data) {
-      const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
-      const endMoment = moment(data.end, 'YYYY-MM-DDTHH:mm:ssZ').valueOf()
-      return (endMoment - startMoment) / 1000 / 60 / 60
-    },
-    options (title) {
+    chart (title, label, data) {
       return {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales : {
-          y : {
-            beginAtZero: true,
+        data: {
+          labels: label,
+          datasets: [
+            {
+              label: title,
+              backgroundColor: "#f87979",
+              data: data
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales : {
+            y : {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Heures'
+              }
+            }
+          },
+          plugins: {
             title: {
               display: true,
-              text: 'Heures'
+              text: title
             }
           }
-        },
-        plugins: {
-          title: {
-            display: true,
-            text: title
-          }
         }
-      }
-    },
-    chartData (type, label, data) {
-      return {
-        labels: label,
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: data
-          }
-        ]
       }
     }
   },

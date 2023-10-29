@@ -23,15 +23,15 @@ export default {
 
   computed: {
     isConnected() {
-      return this.connected;
-    },
+      return this.connected
+    }
   },
 
-  methods: {
-    connectedMethod(value) {
-      this.connected = value;
-    },
-  },
+  methods : {
+    connectedMethod (value) {
+      this.connected = value
+    }
+  }
 };
 </script>
 

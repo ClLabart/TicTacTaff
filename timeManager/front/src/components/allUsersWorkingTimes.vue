@@ -7,25 +7,8 @@
   </div>
   <div v-else>
     <div v-if="show" class="flex items-center justify-center h-screen">
-      <!--    <div class="bg-white divide-y divide-gray-200 w-full">
-            <div class="grid grid-cols-3 p-2 ">
-              <div class="text-left">username</div>
-              <div class="text-left">email</div>
-              <div class="text-left">statistiques</div>
-            </div>
-
-            <div v-for="user in users.data" :key="user.id" class="grid grid-cols-3 p-2">
-              <div class="text-left">{{ user.username }}</div>
-              <div class="text-left">{{ user.email }}</div>
-              <div class="text-left">
-                <button @click="showStats(user.id)" class="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded">
-                  Voir les statistiques
-                </button>
-              </div>
-            </div>
-          </div>-->
       <Vue-good-table
-          class="w-full  bg-white text-sm text-left text-gray-500"
+          class="bg-white divide-y divide-gray-200 w-full"
           :columns="columns"
           :rows="users.data"
           :paginate="true"
@@ -38,30 +21,33 @@
           :sortable="true"
           :sort-options="{enabled: false}"
       >
-        <template v-slot:table-row="props">
-              <td v-if="props.column.field === 'statistiques'" class="m-4 px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                <button @click="showStats(props.row.id)" class="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded">
-                  Voir les statistiques
-                </button>
-              </td>
-              <td v-else class="p-2 text-left ">
-                {{ props.formattedRow[props.column.field] }}
-              </td>
-
+        <!-- En-tête du tableau -->
+        <template v-slot:table-header="props">
+          <div class="grid grid-cols-3 p-2">
+            <div v-for="column in props.columns" :key="column.field" class="text-left">
+              {{ column.label }}
+            </div>
+          </div>
         </template>
 
-        <template v-slot:table-header="props">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 ">
-            <tr v-for="column in props.columns" :key="column.field" class="px-6 py-3 bg-gray-200">
-              <th>
-                {{ column.label }}
-              </th>
-            </tr>
-
-          </thead>
-
+        <!-- Corps du tableau -->
+        <template v-slot:table-row="props">
+          <div class="grid grid-cols-3 p-2">
+            <div v-if="props.column.field === 'actions'" class="text-left">
+              <button @click="showStats(props.row.id)" class="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded">
+                Voir les statistiques
+              </button>
+              <button @click="editProfile('userComponent', props.row.id)" class="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded">
+                editer le profil
+              </button>
+            </div>
+            <div v-else class="text-left">
+              {{ props.formattedRow[props.column.field] }}
+            </div>
+          </div>
         </template>
       </Vue-good-table>
+
 
 
 
@@ -81,12 +67,14 @@
 <script>
 import WorkingTimes from "@/components/workingTimes.vue";
 import { VueGoodTable } from 'vue-good-table-next';
+import { mapActions } from "vuex";
 export default {
   name: "allUsersWorkingTimes",
   components: {
     WorkingTimes,
     VueGoodTable
   },
+
   data() {
     return {
       users: {data: []},
@@ -105,8 +93,8 @@ export default {
           field: 'email'
         },
         {
-          label: 'Statistiques',
-          field: 'statistiques',
+          label: 'Actions',
+          field: 'actions',
           html: true
         }
       ]
@@ -116,8 +104,6 @@ export default {
   async created() {
     try {
       this.users = await this.allUsers();
-      console.log(this.users)
-
       this.isLoading = false;
     } catch (e) {
       this.error = e;
@@ -126,6 +112,8 @@ export default {
   },
 
   methods : {
+    ...mapActions('component', ['showComponent']),
+    ...mapActions('user', ['findUserId']),
     async allUsers () {
       const url = "http://localhost:4000/api/users";
       try {
@@ -133,6 +121,10 @@ export default {
       } catch (e) {
         console.log(e);
       }
+    },
+    editProfile(type, id) {
+      this.findUserId(id);
+      this.showComponent({type: type, show: true});
     },
     showStats(id) {
       this.show = false;

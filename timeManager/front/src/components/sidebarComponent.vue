@@ -26,7 +26,7 @@
             <div class="menu-category">
               Paramètres
                 <!-- Éléments du menu 2 -->
-                <button>Profil</button>
+                <button @click="componentType('userComponent')">Profil</button>
                 <button>Se déconnecter</button>
             </div>
         </div>

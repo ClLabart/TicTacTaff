@@ -1,37 +1,49 @@
 <template>
-  <div
-      v-if="dataLoaded"
-      class="flex"
-  >
-    <div class="flex-1 p-2">
-      <select
-          v-model="selectedYear"
-          @change="getWorkingYearTimes()"
+  <div class="relative">
+    <div>
+      <button
+          type="submit"
+          class="text-white absolute left-2.5 top-2.5 bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          @click="$emit('hide', true)"
       >
-        <option v-for="(year, indexYear) in generateYears" :key="indexYear">
-          {{ year }}
-        </option>
-      </select>
-      <div v-if="loading">
-        chargement en cours...
-      </div>
-      <div v-if="error">
-        une erreur est survenue : {{ error }}
-      </div>
-      <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
+        Retour
+      </button>
     </div>
-    <div class="flex-1 p-2">
-      <select
-          v-model="selectedMonth"
-          @change="getWorkingMonthTimes()"
-      >
-        <option v-for="(month, indexMonth) in monthNames" :key="indexMonth">
-          {{ month }}
-        </option>
-      </select>
-      <bar-chart :chart="chartDataForMonth"  />
+    <div
+        v-if="dataLoaded"
+        class="grid grid-cols-1 gap-4"
+    >
+      <div class="flex-1 p-2">
+        <select
+            v-model="selectedYear"
+            @change="getWorkingYearTimes()"
+        >
+          <option v-for="(year, indexYear) in generateYears" :key="indexYear">
+            {{ year }}
+          </option>
+        </select>
+        <div v-if="loading">
+          chargement en cours...
+        </div>
+        <div v-if="error">
+          une erreur est survenue : {{ error }}
+        </div>
+        <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
+      </div>
+      <div class="flex-1 p-2">
+        <select
+            v-model="selectedMonth"
+            @change="getWorkingMonthTimes()"
+        >
+          <option v-for="(month, indexMonth) in monthNames" :key="indexMonth">
+            {{ month }}
+          </option>
+        </select>
+        <bar-chart :chart="chartDataForMonth"  />
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>

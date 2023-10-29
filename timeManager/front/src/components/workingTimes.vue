@@ -59,6 +59,13 @@ export default {
     }
   },
 
+  props: {
+    user: {
+      type: Object,
+      required: true
+    }
+  },
+
   computed : {
     generateYears () {
       const years = []
@@ -120,7 +127,7 @@ export default {
       start = this.formatDateToSQL(start);
       end = this.formatDateToSQL(end);
       this.loading = true;
-      const url = `http://localhost:4000/api/workingtimes/3?start=${start}&end=${end}`;
+      const url = `http://localhost:4000/api/workingtimes/${this.user.id}?start=${start}&end=${end}`;
 
       try {
         const response = await fetch(url);

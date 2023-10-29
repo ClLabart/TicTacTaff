@@ -59,7 +59,6 @@ export default {
     componentType (type) {
       if(type === this.component.type) {
         this.show = !this.show;
-        console.log(this.show)
         this.showComponent({type: type, show: this.show});
         return;
       }

@@ -13,6 +13,7 @@
     "moment": "^2.29.4",
     "vue": "^3.2.13",
     "vue-chartjs": "^5.2.0",
+    "vue-good-table-next": "^0.2.1",
     "vue-router": "^4.2.5",
     "vuex": "^4.1.0"
   },

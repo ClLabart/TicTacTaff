@@ -19,14 +19,14 @@
                 <!-- Éléments du menu 1 -->
                 <button>Accueil</button>
                 <button>Pointeuse</button>
-                <button @click="type = 'workingTimes'">Temps</button>
+                <button @click="componentType('workingTimes')">Temps</button>
             </div>
 
             <!-- Catégorie de menu 2 -->
             <div class="menu-category">
               Paramètres
                 <!-- Éléments du menu 2 -->
-                <button @click="type = 'userComponent'">Profil</button>
+                <button>Profil</button>
                 <button>Se déconnecter</button>
             </div>
         </div>
@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { mapGetters,  mapActions } from "vuex";
 export default {
     props: {
       profileImage: String,
@@ -42,15 +43,30 @@ export default {
 
   data() {
     return {
-      type: null,
+      show: false
     };
   },
 
-  watch: {
-    type() {
-      this.$emit("type", this.type);
-    },
+  computed: {
+      ...mapGetters('component', ['getComponent']),
+    component () {
+      return this.getComponent;
+    }
   },
+
+  methods: {
+    ...mapActions('component', ["showComponent"]),
+    componentType (type) {
+      if(type === this.component.type) {
+        this.show = !this.show;
+        console.log(this.show)
+        this.showComponent({type: type, show: this.show});
+        return;
+      }
+      this.showComponent({type: type, show: true});
+    }
+  },
+
 }
 </script>
 

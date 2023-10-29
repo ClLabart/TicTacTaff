@@ -4,7 +4,7 @@
       <button
           type="submit"
           class="text-white absolute left-2.5 top-2.5 bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          @click="$emit('hide', true)"
+          @click="hide"
       >
         Retour
       </button>
@@ -49,6 +49,7 @@
 <script>
 import BarChart from "@/components/graphs/barChart.vue";
 import moment from 'moment'
+import { mapGetters } from "vuex";
 
 export default {
   name: 'WorkingTimes',
@@ -79,6 +80,7 @@ export default {
   },
 
   computed : {
+    ...mapGetters('component', ['getComponent']),
     generateYears () {
       const years = []
       const currentYear = new Date().getFullYear()
@@ -124,8 +126,21 @@ export default {
     },
     chartDataForMonth() {
       return this.chart('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h', this.weeksInSelectedMonth, this.allHoursOfWeek)
+    },
+    component () {
+      return this.getComponent;
     }
   },
+
+  watch: {
+    'component.show':
+      function (value) {
+        if(!value) {
+          this.hide();
+        }
+      }
+  },
+
 
   async mounted () {
     await this.getWorkingYearTimes()
@@ -225,6 +240,9 @@ export default {
           }
         }
       }
+    },
+    hide () {
+      this.$emit('hide', true);
     }
   },
 

@@ -5,25 +5,24 @@
             :profileImage="require('@/assets/imgs/Logo_Batman.png')"
             :username="username"
             class="div1"
-            @type="type"
         />
         <div class="div2">
-            <div>
-                <UserComponent v-if="componentType === 'userComponent'" />
-            </div>
+          <div>
+              <UserComponent v-if="component.type === 'userComponent'" />
+          </div>
 <!--            <div>
-                <WorkingTime />
-            </div>-->
-            <div>
-                <All-users-working-times v-if="componentType === 'workingTimes'" />
-            </div>
+              <WorkingTime />
+          </div>-->
+          <div>
+              <All-users-working-times v-if="component.type === 'workingTimes'"/>
+          </div>
 <!--            <div>
-                <ChartManager />
-            </div>-->
+              <ChartManager />
+          </div>-->
 <!--            <div>
-                <ClockManager />
-            </div>-->
-        </div>
+              <ClockManager />
+          </div>-->
+      </div>
     </div>
 </template>
 
@@ -34,6 +33,7 @@ import SidebarComponent from "@/components/sidebarComponent.vue";
 import UserComponent from "@/components/userComponent.vue";
 //import WorkingTime from "@/components/workingTime.vue";
 import AllUsersWorkingTimes from "@/components/allUsersWorkingTimes.vue";
+import { mapGetters } from "vuex";
 
 export default {
     name: "ConnectedComponent",
@@ -47,13 +47,13 @@ export default {
     data() {
       return {
         username: "Batman",
-        componentType: null
       };
     },
 
-  methods : {
-    type(value) {
-      this.componentType = value;
+  computed: {
+    ...mapGetters('component', ['getComponent']),
+    component () {
+      return this.getComponent;
     }
   }
 };

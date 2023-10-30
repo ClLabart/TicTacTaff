@@ -52,7 +52,7 @@
 
 
   <div v-if="showWorkingTimes" class="p-6">
-    <working-times
+    <Working-times
         :user="users.data.find(user => user.id === this.id)"
         @hide='hide'
     />

@@ -2,7 +2,8 @@
 const state = {
     component: {
         type: '',
-        show: false
+        show: false,
+        childrenType: ''
     }
 }
 
@@ -12,11 +13,11 @@ const getters = {
 
 const mutations = {
     SET_COMPONENT(state, component) {
-        const { type, show } = component
+        const { type, show, childrenType } = component
         state.component.type = type
         state.component.show = show
+        state.childrenType = childrenType
     },
-
 }
 
 const actions = {

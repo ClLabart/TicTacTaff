@@ -19,7 +19,7 @@
                 <!-- Éléments du menu 1 -->
                 <button>Accueil</button>
                 <button>Pointeuse</button>
-                <button @click="componentType('workingTimes')">Temps</button>
+                <button @click="componentType('workingTimes', 'editProfile')">Temps</button>
             </div>
 
             <!-- Catégorie de menu 2 -->
@@ -36,15 +36,17 @@
 <script>
 import { mapGetters,  mapActions } from "vuex";
 export default {
-    props: {
-      profileImage: String,
-      username: String,
-    },
-
+  name: "SidebarComponent",
   data() {
     return {
       show: false
     };
+  },
+
+  props: {
+    profileImage: String,
+    username: String,
+    id: Number
   },
 
   computed: {
@@ -56,10 +58,18 @@ export default {
 
   methods: {
     ...mapActions('component', ["showComponent"]),
-    componentType (type) {
+    componentType (type, childrenType) {
       if(type === this.component.type) {
         this.show = !this.show;
+        if(childrenType) {
+          this.showComponent({type: type, show: this.show, childrenType: childrenType});
+          return;
+        }
         this.showComponent({type: type, show: this.show});
+        return;
+      }
+      if(childrenType) {
+        this.showComponent({type: type, show: true, childrenType: childrenType});
         return;
       }
       this.showComponent({type: type, show: true});

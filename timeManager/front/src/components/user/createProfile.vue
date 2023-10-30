@@ -177,7 +177,7 @@
 import {mapGetters, mapActions} from "vuex";
 
 export default {
-  name: "UserComponent",
+  name: "CreateProfile",
 
   data() {
     return {

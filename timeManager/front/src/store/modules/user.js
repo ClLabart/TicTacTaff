@@ -24,7 +24,6 @@ const actions = {
         commit('SET_CONNECTION', isConnected)
     },
     async create ({commit}, user) {
-        console.log(user)
         try {
             const url = 'http://localhost:4000/api/users'
             await fetch(url, {
@@ -49,6 +48,21 @@ const actions = {
             })
             const data = await response.json()
             commit('SET_USER_SELECTED', data)
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    async update ({ commit }, {id, user}) {
+        try {
+            const url = 'http://localhost:4000/api/users/' + id
+            await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            commit('SET_USER_SELECTED', user)
         } catch (error) {
             console.log(error)
         }

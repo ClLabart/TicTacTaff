@@ -7,6 +7,9 @@
   </div>
   <div v-else>
     <div v-if="show" class="flex items-center justify-center h-screen">
+      <button @click="createProfile" class="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded">
+        Créer un utilisateur
+      </button>
       <Vue-good-table
           class="bg-white divide-y divide-gray-200 w-full"
           :columns="columns"
@@ -37,7 +40,7 @@
               <button @click="showStats(props.row.id)" class="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded">
                 Voir les statistiques
               </button>
-              <button @click="editProfile('userComponent', props.row.id)" class="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded">
+              <button @click="editProfile(props.row.id)" class="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded">
                 editer le profil
               </button>
             </div>
@@ -118,9 +121,9 @@ export default {
         console.log(e);
       }
     },
-    editProfile(type, userId) {
-      this.getUser(userId);
-      this.showComponent({type: type, show: true});
+    async editProfile(userId) {
+      await this.getUser(userId);
+      this.showComponent({type: 'userComponent', show: true, childrenType: 'edit'});
     },
     showStats(id) {
       this.show = false;
@@ -130,6 +133,9 @@ export default {
     hide (value) {
       this.show = value;
       this.showWorkingTimes = !value;
+    },
+    createProfile() {
+      this.showComponent({type: 'userComponent', show: true, childrenType: 'create'});
     }
   }
 }

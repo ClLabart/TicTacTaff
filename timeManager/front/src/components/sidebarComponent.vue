@@ -19,14 +19,14 @@
                 <!-- Éléments du menu 1 -->
                 <button>Accueil</button>
                 <button>Pointeuse</button>
-                <button @click="componentType('workingTimes', 'editProfile')">Temps</button>
+                <button @click="componentType('workingTimes')">Temps</button>
             </div>
 
             <!-- Catégorie de menu 2 -->
             <div class="menu-category">
               Paramètres
                 <!-- Éléments du menu 2 -->
-                <button @click="componentType('userComponent')">Profil</button>
+                <button @click="componentType('userComponent', 'edit')">Profil</button>
                 <button>Se déconnecter</button>
             </div>
         </div>
@@ -58,23 +58,28 @@ export default {
 
   methods: {
     ...mapActions('component', ["showComponent"]),
-    componentType (type, childrenType) {
-      if(type === this.component.type) {
-        this.show = !this.show;
-        if(childrenType) {
-          this.showComponent({type: type, show: this.show, childrenType: childrenType});
-          return;
-        }
-        this.showComponent({type: type, show: this.show});
+    ...mapActions('user', ['getUser']),
+    async componentType(type, childrenType) {
+      if (type === this.component.type) {
+        await this.toggleShow(type, childrenType);
         return;
       }
-      if(childrenType) {
-        this.showComponent({type: type, show: true, childrenType: childrenType});
-        return;
+      await this.setComponent(type, childrenType, true);
+    },
+    async toggleShow(type, childrenType) {
+      this.show = !this.show;
+      await this.setComponent(type, childrenType, this.show);
+    },
+    async setComponent(type, childrenType, show) {
+      const payload = { type, show };
+      if (childrenType) {
+        await this.getUser(2);
+        payload.childrenType = childrenType;
       }
-      this.showComponent({type: type, show: true});
+      this.showComponent(payload);
     }
-  },
+  }
+
 
 }
 </script>

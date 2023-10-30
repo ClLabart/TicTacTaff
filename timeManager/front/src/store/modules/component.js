@@ -16,12 +16,13 @@ const mutations = {
         const { type, show, childrenType } = component
         state.component.type = type
         state.component.show = show
-        state.childrenType = childrenType
+        state.component.childrenType = childrenType
     },
 }
 
 const actions = {
     async showComponent({ commit }, component) {
+        console.log(component)
         commit('SET_COMPONENT', component)
     }
 }

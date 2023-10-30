@@ -1,6 +1,6 @@
 <template>
-  <CreateProfile v-if="infoComponent.childrenType === 'create'" />
-  <EditProfile v-if="infoComponent.childrenType === 'edit'" />
+  <CreateProfile v-if="component.childrenType === 'create'" />
+  <EditProfile v-if="component.childrenType === 'edit'" />
 </template>
 
 
@@ -16,12 +16,15 @@ export default {
     EditProfile
   },
 
+
   computed: {
     ...mapGetters('component', ['getComponent']),
-    infoComponent () {
+    component () {
       return this.getComponent;
     }
-  }
+  },
+
+
 }
 </script>
 

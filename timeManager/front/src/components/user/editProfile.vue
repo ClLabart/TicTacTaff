@@ -156,7 +156,7 @@
               name="password"
               id="password"
               class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              placeholder="Mot de passe"
+              placeholder="Vérifier le mot de passe"
               v-model="verifyPassword"
           />
         </div>
@@ -195,30 +195,32 @@ export default {
     };
   },
 
-  props: {
-    id: Number,
-  },
-
   computed: {
     ...mapGetters('user', ['userSelected']),
-    findUser () {
-      return this.userSelected;
-    },
     checkPassword () {
       return this.password === this.verifyPassword;
-    }
+    },
+    getUser () {
+      return this.userSelected;
+    },
   },
 
-  created () {
-    if(this.findUser){
-      const user = this.findUser;
-      this.username = user.data.username;
-      this.email = user.data.email;
-      this.title = 'editer le profil'
-      return;
-    }
-    this.title = 'créer un profil'
+  watch: {
+    getUser(newVal) {
+      if (newVal && newVal.data) {
+        this.username = newVal.data.username;
+        this.email = newVal.data.email;
+      }
+    },
+    immediate: true,
+    deep: true,
   },
+
+  mounted() {
+      this.username = this.getUser.data.username;
+      this.email = this.getUser.data.email;
+  },
+
 
   beforeUnmount() {
     this.refreshUser();

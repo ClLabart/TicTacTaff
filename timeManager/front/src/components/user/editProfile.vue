@@ -192,6 +192,7 @@ export default {
       email: "",
       password: "",
       verifyPassword: "",
+      id: null,
     };
   },
 
@@ -210,6 +211,7 @@ export default {
       if (newVal && newVal.data) {
         this.username = newVal.data.username;
         this.email = newVal.data.email;
+        this.id = newVal.data.id;
       }
     },
     immediate: true,
@@ -219,6 +221,7 @@ export default {
   mounted() {
       this.username = this.getUser.data.username;
       this.email = this.getUser.data.email;
+      this.id = this.getUser.data.id;
   },
 
 
@@ -230,7 +233,7 @@ export default {
     ...mapActions('user', ['refreshUser', 'update', 'delete']),
 
     async deleteUser() {
-      await this.delete(this.id);
+      await this.delete(this.getUser.data.id);
     },
 
     async updateUser() {
@@ -239,10 +242,14 @@ export default {
         return;
       } else {
         const user = {
-          username: this.username,
-          email: this.email,
+          users: {
+            username: this.username,
+            email: this.email,
+          }
+
         };
-        await this.update({id: this.id, user})
+        console.log(user, this.getUser.data.id);
+        await this.update({id: this.getUser.data.id, user})
       }
     }
   },

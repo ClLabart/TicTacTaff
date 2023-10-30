@@ -73,7 +73,7 @@ export default {
     async setComponent(type, childrenType, show) {
       const payload = { type, show };
       if (childrenType) {
-        await this.getUser(2);
+        await this.getUser(3);
         payload.childrenType = childrenType;
       }
       this.showComponent(payload);

@@ -55,15 +55,16 @@ const actions = {
     },
     async update ({ commit }, {id, user}) {
         try {
+            console.log(user, id)
             const url = 'http://localhost:4000/api/users/' + id
-            await fetch(url, {
+            const res = await fetch(url, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(user)
             })
-            commit('SET_USER_SELECTED', user)
+            commit('SET_USER_SELECTED', res)
         } catch (error) {
             console.log(error)
         }

@@ -1,12 +1,12 @@
 <template>
-    <div class="mainGrid">
+    <div class="">
         <!-- Utilisez le composant Sidebar ici -->
         <SidebarComponent
             :profileImage="require('@/assets/imgs/Logo_Batman.png')"
             :username="username"
-            class="div1"
+            class=""
         />
-        <div class="div2">
+        <div class="">
           <div>
               <UserComponent v-if="component.type === 'userComponent'" />
           </div>

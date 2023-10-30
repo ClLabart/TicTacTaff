@@ -23,7 +23,7 @@ const actions = {
     updateConnection({ commit }, isConnected) {
         commit('SET_CONNECTION', isConnected)
     },
-    async create ({commit}, user) {
+    async create (user) {
         try {
             const url = 'http://localhost:4000/api/users'
             await fetch(url, {

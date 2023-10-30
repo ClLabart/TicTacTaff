@@ -197,7 +197,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('user', ['create', 'delete']),
+    ...mapActions('user', ['create']),
 
     async createUser() {
       if(!this.checkPassword) {
@@ -210,6 +210,7 @@ export default {
             email: this.email
           }
         }
+        console.log(body)
         await this.create(body);
       }
     }

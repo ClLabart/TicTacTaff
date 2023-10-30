@@ -1,46 +1,47 @@
 services:
-  db:
-    image: postgres:latest
-    container_name: postgres
-    environment:
-      POSTGRES_DB: timemanager_dev
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-    ports:
-      - "5432:5432"
+    db:
+        image: postgres:latest
+        container_name: postgres
+        environment:
+            POSTGRES_DB: timemanager_dev
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: root
+        ports:
+            - "5432:5432"
 
-  phoenix:
-    build: .
-    container_name: phoenix
-    environment:
-         # Variables to connect to our Postgres server.
-         PGDATABASE: timemanager_dev
-         PGUSER: postgres
-         PGPASSWORD: root
-         PGPORT: 5432
-         # Hostname of our Postgres container.
-         PGHOST: db
-    # command: mix phx.server
-    # Remove for production servers
-    volumes:
-      - ./timeManager:/app
-    ports:
-      - "4000:4000"
-    depends_on:
-      - db
+    phoenix:
+        container_name: phoenix
+        build: .
+        environment:
+            # Variables to connect to our Postgres server.
+            PGDATABASE: timemanager_dev
+            PGUSER: postgres
+            PGPASSWORD: root
+            PGPORT: 5432
+            # Hostname of our Postgres container.
+            PGHOST: db
+        # command: mix phx.server
+        # Remove for production servers
+        # volumes:
+        #   - ./timeManager:/app
+        ports:
+            - "4000:4000"
+        depends_on:
+            - db
 
-  vue:
-    image: front:latest
-    build: 
-      context: ./timeManager/front
-    container_name: vue
-      # context: ./timeManager/front/Dockerfile
-    # command: npm run dev
-    # Remove for production servers
-    # volumes:
-    #   - ./timeManager/front/dist:/usr/share/nginx/html
-    ports:
-      - "8180:80"
-      # - "8180:80"
-    depends_on:
-      - phoenix
+    vue:
+        image: front:latest
+        build:
+            context: ./timeManager/front
+        container_name:
+            vue
+            # context: ./timeManager/front/Dockerfile
+        # command: npm run dev
+        # Remove for production servers
+        # volumes:
+        #   - ./timeManager/front/dist:/usr/share/nginx/html
+        ports:
+            - "8180:80"
+            # - "8180:80"
+        depends_on:
+            - phoenix

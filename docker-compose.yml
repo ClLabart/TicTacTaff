@@ -1,12 +1,11 @@
 services:
   db:
     image: postgres:latest
+    container_name: postgres
     environment:
       POSTGRES_DB: timemanager_dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
-    networks:
-      - postgres
     ports:
       - "5432:5432"
 
@@ -25,8 +24,6 @@ services:
     # Remove for production servers
     volumes:
       - ./timeManager:/app
-    networks:
-      - postgres
     ports:
       - "4000:4000"
     depends_on:
@@ -35,20 +32,15 @@ services:
   vue:
     image: front:latest
     build: 
-      context: ./front.Dockerfile
+      context: ./timeManager/front
+    container_name: vue
       # context: ./timeManager/front/Dockerfile
     # command: npm run dev
     # Remove for production servers
     # volumes:
     #   - ./timeManager/front/dist:/usr/share/nginx/html
-    networks:
-      - postgres
     ports:
       - "8180:80"
       # - "8180:80"
     depends_on:
       - phoenix
-
-networks:
-  postgres:
-    name: postgres

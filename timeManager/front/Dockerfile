@@ -5,7 +5,7 @@ WORKDIR /app
 # Copie des packages json
 COPY package*.json ./
 # Copie des fichiers
-COPY ./timeManager/front .
+COPY . .
 # Installation des dépendances
 RUN npm install
 # Construire l'app

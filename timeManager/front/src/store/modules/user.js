@@ -1,29 +1,74 @@
 
 const state = {
     connexion: false,
-    userId: null
+    userSelected: null
 }
 
 const getters = {
     isConnected: state => state.connexion,
-    userId: state => state.userId
+    userSelected: state => state.userSelected
 }
 
 const mutations = {
     SET_CONNECTION(state, isConnected) {
         state.connexion = isConnected
     },
-    SET_USERID(state, userId) {
-        state.userId = userId
+    SET_USER_SELECTED(state, user) {
+        state.userSelected = user
+        console.log(state.userSelected)
     }
 }
 
 const actions = {
-    async updateConnection({ commit }, isConnected) {
+    updateConnection({ commit }, isConnected) {
         commit('SET_CONNECTION', isConnected)
     },
-    async findUserId({ commit }, userId) {
-        commit('SET_USERID', userId)
+    async create ({commit}, user) {
+        console.log(user)
+        try {
+            const url = 'http://localhost:4000/api/users'
+            await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    async getUser ({ commit } , id) {
+        try {
+            const url = 'http://localhost:4000/api/users/' + id
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            const data = await response.json()
+            commit('SET_USER_SELECTED', data)
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    refreshUser({ commit }) {
+        commit('SET_USER_SELECTED', null)
+    },
+    async delete ({ actions }, id) {
+        try {
+            const url = 'http://localhost:4000/api/users/' + id
+            await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            actions.refreshUser()
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 

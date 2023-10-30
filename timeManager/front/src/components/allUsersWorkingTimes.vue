@@ -47,10 +47,6 @@
           </div>
         </template>
       </Vue-good-table>
-
-
-
-
     </div>
   </div>
 
@@ -113,7 +109,7 @@ export default {
 
   methods : {
     ...mapActions('component', ['showComponent']),
-    ...mapActions('user', ['findUserId']),
+    ...mapActions('user', ['getUser']),
     async allUsers () {
       const url = "http://localhost:4000/api/users";
       try {
@@ -122,8 +118,8 @@ export default {
         console.log(e);
       }
     },
-    editProfile(type, id) {
-      this.findUserId(id);
+    editProfile(type, userId) {
+      this.getUser(userId);
       this.showComponent({type: type, show: true});
     },
     showStats(id) {

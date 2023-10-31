@@ -6,24 +6,22 @@
             :username="username"
             class="col-span-1 h-full"
         />
-        <main class="col-span-3 h-full">
-            <div>
-                <UserComponent v-if="component.type === 'userComponent'" />
-            </div>
-            <!--            <div>
-              <WorkingTime />
-          </div>-->
-            <div>
-                <All-users-working-times
-                    v-if="component.type === 'workingTimes'"
-                />
-            </div>
-            <!--            <div>
-              <ChartManager />
-          </div>-->
-            <!--            <div>
-              <ClockManager />
-          </div>-->
+        <main class="col-span-3" :class="[component.type !== '' ? active : '']">
+            <!-- <div> -->
+            <UserComponent v-if="component.type === 'userComponent'" />
+            <!-- </div> -->
+            <!-- <div> -->
+            <WorkingTime v-if="component.type === 'workingTime'" />
+            <!-- </div> -->
+            <!-- <div> -->
+            <All-users-working-times v-if="component.type === 'workingTimes'" />
+            <!-- </div> -->
+            <!-- <div> -->
+            <ChartManager v-if="component.type === 'chartManager'" />
+            <!-- </div> -->
+            <!-- <div> -->
+            <ClockManager v-if="component.type === 'clockManager'" />
+            <!-- </div> -->
         </main>
     </div>
 </template>
@@ -48,6 +46,7 @@ export default {
     data() {
         return {
             username: "Batman",
+            active: "h-[calc(100%-2rem)] rounded-xl m-4 bg-[#f5f5f5]",
         };
     },
 

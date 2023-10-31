@@ -248,7 +248,6 @@ export default {
           }
 
         };
-        console.log(user, this.getUser.data.id);
         await this.update({id: this.getUser.data.id, user})
       }
     }

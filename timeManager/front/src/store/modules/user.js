@@ -16,7 +16,6 @@ const mutations = {
     },
     SET_USER_SELECTED(state, user) {
         state.userSelected = user
-        console.log(state.userSelected)
     }
 }
 
@@ -24,8 +23,7 @@ const actions = {
     updateConnection({ commit }, isConnected) {
         commit('SET_CONNECTION', isConnected)
     },
-    async create ({ commit },user) {
-        console.log(user)
+    async create ({ commit }, user) {
         try {
             const url = 'http://localhost:4000/api/users'
             await fetch(url, {
@@ -56,7 +54,6 @@ const actions = {
     },
     async update ({ commit }, {id, user}) {
         try {
-            console.log(user, id)
             const url = 'http://localhost:4000/api/users/' + id
             const res = await fetch(url, {
                 method: 'PUT',

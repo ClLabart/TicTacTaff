@@ -210,7 +210,6 @@ export default {
             email: this.email
           }
         }
-        console.log(body)
         await this.create(body);
       }
     }

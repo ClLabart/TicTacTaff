@@ -21,7 +21,7 @@ const mutations = {
 }
 
 const actions = {
-    async showComponent({ commit }, component) {
+    showComponent({ commit }, component) {
         commit('SET_COMPONENT', component)
     }
 }

@@ -17,11 +17,11 @@ export default {
   name: 'HomePage',
   components: {
     LoginComponent,
-    ConnectedComponent
+    ConnectedComponent,
   },
   data() {
     return {
-      connected: false
+      connected: true
     }
   },
 

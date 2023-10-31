@@ -1,20 +1,18 @@
 <template>
-    <nav class="sidebar">
-        <section class="inline-flex">
-            <div class="logoContainer">
-                <!-- Logo du site web -->
-                <img :src="profileImage" alt="Logo de Batman" class="logo" />
-            </div>
-            <p>
+    <nav class="sidebar rounded-xl bg-[#f5f5f5] m-4 px-4 py-6">
+        <section class="flex flex-row gap-5 justify-center">
+            <!-- Logo du site web -->
+            <img :src="profileImage" alt="Logo de Batman" class="h-12 w-auto" />
+            <div>
                 <!-- Nom d'utilisateur -->
-                <span>Bonjour 🤝</span>
-                <span>{{ username }}</span>
-            </p>
+                <p>Bonjour 🤝</p>
+                <p>{{ username }}</p>
+            </div>
         </section>
 
         <section>
             <article class="mt-5">
-                <p class="text-[#405D9F]">Menu</p>
+                <p class="text-[#405D9F] mb-1 px-4">Menu</p>
                 <ul>
                     <li
                         :class="[component.type === 'home' ? active : inactive]"
@@ -83,7 +81,7 @@
             </article>
 
             <article class="mt-5">
-                <p class="text-[#405D9F]">Paramètres</p>
+                <p class="text-[#405D9F] mb-1 px-4">Paramètres</p>
                 <ul>
                     <li
                         :class="[
@@ -137,8 +135,8 @@ export default {
     data() {
         return {
             show: false,
-            active: "activated-link flex items-center py-2.5 px-4 text-[#2990F1] font-normal text-dark-500 rounded-lg hover:bg-gray-200 group  bg-white shadow-lg shadow-gray-200 hover:!bg-white  transition-all duration-200",
-            inactive: "flex items-center py-2.5 px-4 text-base font-normal text-dark-500 rounded-lg hover:bg-gray-200 group transition-all duration-200",
+            active: "activated-link flex items-center py-2.5 px-4 text-[#2990F1] rounded-lg hover:bg-gray-200 group  bg-white shadow-lg shadow-gray-200 hover:!bg-white  transition-all duration-200",
+            inactive: "flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-200 group transition-all duration-200",
         };
     },
 
@@ -190,32 +188,7 @@ export default {
     fill: #2990f1;
 }
 
-/* Styles de la barre latérale */
 .sidebar {
     height: calc(100% - 2rem);
-    width: 100%;
-    background-color: #f5f5f5;
-    padding: 1rem 2rem 1rem 2rem;
-    color: black;
-    margin: 1rem;
-    border-radius: 10px;
-}
-
-.logoContainer {
-    width: 100%;
-    height: 100%;
-}
-
-/* Style de l'image de profil */
-.logo {
-    width: 80%;
-    height: 80%;
-}
-
-/* Style du nom d'utilisateur */
-
-/* Style des catégories de menus */
-.menu-category {
-    margin-top: 20px;
 }
 </style>

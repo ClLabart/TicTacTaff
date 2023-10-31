@@ -1,28 +1,30 @@
 <template>
-    <div class="">
+    <div class="grid grid-cols-4 h-full">
         <!-- Utilisez le composant Sidebar ici -->
         <SidebarComponent
             :profileImage="require('@/assets/imgs/Logo_Batman.png')"
             :username="username"
-            class=""
+            class="col-span-1 h-full"
         />
-        <div class="">
-          <div>
-              <UserComponent v-if="component.type === 'userComponent'" />
-          </div>
-<!--            <div>
+        <main class="col-span-3 h-full">
+            <div>
+                <UserComponent v-if="component.type === 'userComponent'" />
+            </div>
+            <!--            <div>
               <WorkingTime />
           </div>-->
-          <div>
-              <All-users-working-times v-if="component.type === 'workingTimes'"/>
-          </div>
-<!--            <div>
+            <div>
+                <All-users-working-times
+                    v-if="component.type === 'workingTimes'"
+                />
+            </div>
+            <!--            <div>
               <ChartManager />
           </div>-->
-<!--            <div>
+            <!--            <div>
               <ClockManager />
           </div>-->
-      </div>
+        </main>
     </div>
 </template>
 
@@ -38,41 +40,24 @@ import { mapGetters } from "vuex";
 export default {
     name: "ConnectedComponent",
     components: {
-      AllUsersWorkingTimes,
-      SidebarComponent,
-      UserComponent
-
+        AllUsersWorkingTimes,
+        SidebarComponent,
+        UserComponent,
     },
 
     data() {
-      return {
-        username: "Batman",
-      };
+        return {
+            username: "Batman",
+        };
     },
 
-  computed: {
-    ...mapGetters('component', ['getComponent']),
-    component () {
-      return this.getComponent;
-    }
-  }
+    computed: {
+        ...mapGetters("component", ["getComponent"]),
+        component() {
+            return this.getComponent;
+        },
+    },
 };
 </script>
 
-<style scoped>
-.mainGrid {
-    display: grid;
-    grid-template-columns: 15% 85%;
-    grid-template-rows: 1fr;
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-    height: 100vh;
-}
-
-.div1 {
-    grid-area: 1 / 1 / 2 / 2;
-}
-.div2 {
-    grid-area: 1 / 2 / 2 / 3;
-}
-</style>
+<style></style>

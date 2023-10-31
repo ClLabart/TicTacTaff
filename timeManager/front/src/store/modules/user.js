@@ -33,6 +33,7 @@ const actions = {
                 },
                 body: JSON.stringify(user)
             })
+            console.log('User created', commit('SET_USER_SELECTED', user))
         } catch (error) {
             console.log(error)
         }

@@ -213,9 +213,7 @@ export default {
         this.email = newVal.data.email;
         this.id = newVal.data.id;
       }
-    },
-    immediate: true,
-    deep: true,
+    }
   },
 
   mounted() {

@@ -35,3 +35,4 @@ timeManager-*.tar
 npm-debug.log
 /assets/node_modules/
 
+/timeManager/config/dev.local.exs

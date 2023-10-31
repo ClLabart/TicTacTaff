@@ -14,7 +14,7 @@
               <WorkingTime />
           </div>-->
             <div>
-                <All-users-working-times
+                <WorkingTimes
                     v-if="component.type === 'workingTimes'"
                 />
             </div>
@@ -34,13 +34,13 @@ import SidebarComponent from "@/components/sidebarComponent.vue";
 //import ClockManager from "@/components/clockManager.vue";
 import UserComponent from "@/components/userComponent.vue";
 //import WorkingTime from "@/components/workingTime.vue";
-import AllUsersWorkingTimes from "@/components/allUsersWorkingTimes.vue";
+import WorkingTimes from "@/components/workingTimes.vue";
 import { mapGetters } from "vuex";
 
 export default {
     name: "ConnectedComponent",
     components: {
-        AllUsersWorkingTimes,
+        WorkingTimes,
         SidebarComponent,
         UserComponent,
     },

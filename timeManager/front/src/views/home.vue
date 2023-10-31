@@ -1,32 +1,38 @@
 <template>
-  <LoginComponent
-      v-if="!connexion"
-  />
-  <ConnectedComponent v-if="connexion" />
+    <div class="h-full">
+        <LoginComponent v-if="!isConnected" @connected="connectedMethod" />
+        <ConnectedComponent v-if="isConnected" />
+    </div>
 </template>
 
 <script>
 import LoginComponent from "@/components/connexion/loginComponent.vue";
 import ConnectedComponent from "@/components/connexion/connectedComponent.vue";
 
-import { mapGetters } from 'vuex'
 export default {
-  name: 'HomePage',
-  components: {
-    LoginComponent,
-    ConnectedComponent
-  },
+    name: "HomePage",
+    components: {
+        LoginComponent,
+        ConnectedComponent,
+    },
+    data() {
+        return {
+            connected: true,
+        };
+    },
 
-  computed: {
-    ...mapGetters('user', ['isConnected']),
-    connexion() {
-      return this.isConnected
-    }
-  },
-}
+    computed: {
+        isConnected() {
+            return this.connected;
+        },
+    },
 
+    methods: {
+        connectedMethod(value) {
+            this.connected = value;
+        },
+    },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style></style>

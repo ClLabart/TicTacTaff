@@ -14,7 +14,7 @@
             <WorkingTime v-if="component.type === 'workingTime'" />
             <!-- </div> -->
             <!-- <div> -->
-            <All-users-working-times v-if="component.type === 'workingTimes'" />
+            <AllUsersWorkingTimes v-if="component.type === 'workingTimes'" />
             <!-- </div> -->
             <!-- <div> -->
             <ChartManager v-if="component.type === 'chartManager'" />

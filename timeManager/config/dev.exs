@@ -10,6 +10,7 @@ config :timeManager, TimeManager.Repo,
   password: System.get_env("PGPASSWORD"),
   hostname: System.get_env("PGHOST"),
   database: System.get_env("PGDATABASE"),
+  port: System.get_env("PGPORT"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

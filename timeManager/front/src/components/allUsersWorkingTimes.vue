@@ -1,17 +1,17 @@
 <template>
-  <div v-if="isLoading">
+  <div v-if="isLoading" class="flex items-center justify-center h-screen">
     Chargement...
   </div>
-  <div v-else-if="error">
+  <div v-else-if="error" class="flex items-center justify-center h-screen">
     {{ error }}
   </div>
   <div v-else>
-    <div v-if="show" class="flex items-center justify-center h-screen">
+    <div v-if="show" class="">
       <button @click="createProfile" class="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded">
         Créer un utilisateur
       </button>
       <Vue-good-table
-          class="bg-white divide-y divide-gray-200 w-full"
+          class="w-full"
           :columns="columns"
           :rows="users.data"
           :paginate="true"
@@ -23,15 +23,16 @@
           }"
           :sortable="true"
           :sort-options="{enabled: false}"
+          theme="polar-bear"
       >
         <!-- En-tête du tableau -->
-        <template v-slot:table-header="props">
-          <div class="grid grid-cols-3 p-2">
-            <div v-for="column in props.columns" :key="column.field" class="text-left">
-              {{ column.label }}
+          <template v-slot:table-header="props">
+            <div class="grid grid-cols-3 p-2">
+              <div v-for="column in props.columns" :key="column.field" class="text-left">
+                {{ column.label }}
+              </div>
             </div>
-          </div>
-        </template>
+          </template>
 
         <!-- Corps du tableau -->
         <template v-slot:table-row="props">
@@ -65,6 +66,7 @@
 
 <script>
 import WorkingTimes from "@/components/workingTimes.vue";
+import 'vue-good-table-next/dist/vue-good-table-next.css'
 import { VueGoodTable } from 'vue-good-table-next';
 import { mapActions } from "vuex";
 export default {

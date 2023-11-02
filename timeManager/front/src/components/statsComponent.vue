@@ -68,7 +68,6 @@ export default {
       allHoursOfMonth: [],
       allHoursOfWeek: [],
       loading: false,
-      error: null
     }
   },
 

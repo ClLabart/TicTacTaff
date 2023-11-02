@@ -1,5 +1,5 @@
 <template>
-    <nav class="sidebar rounded-xl bg-[#f5f5f5] m-4 px-4 py-6">
+    <nav class="sidebar rounded-xl bg-[#f5f5f5] m-4 mr-0 px-4 py-6">
         <section class="flex flex-row gap-5 justify-center">
             <!-- Logo du site web -->
             <img :src="profileImage" alt="Logo de Batman" class="h-12 w-auto" />

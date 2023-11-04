@@ -41,6 +41,17 @@
         </select>
         <bar-chart :chart="chartDataForMonth"  />
       </div>
+      <div class="flex-1 p-2">
+        <select
+            v-model="selectedWeek"
+            @change="getWorkingWeekTimes()"
+        >
+          <option v-for="(week, indexWeek) in allWeeks" :key="indexWeek">
+            {{ week }}
+          </option>
+        </select>
+        <bar-chart :chart="chartDataForWeek"  />
+      </div>
     </div>
   </div>
 
@@ -67,8 +78,10 @@ export default {
       weeksHours: 0,
       allHoursOfMonth: [],
       allHoursOfWeek: [],
+      allHoursOfDay: [],
       loading: false,
-      error: null
+      error: null,
+      selectedWeek: moment().week()
     }
   },
 
@@ -93,30 +106,39 @@ export default {
       const weeks = [];
       const monthIndex = this.monthNames.indexOf(this.selectedMonth);
       let currentDate = moment().year(this.selectedYear).month(monthIndex).startOf('month');
+
       while (currentDate.month() === monthIndex) {
         let startOfWeek = currentDate.clone().startOf('week');
         let endOfWeek = currentDate.clone().endOf('week');
         const weekNumber = currentDate.week();
-
-        if(startOfWeek.month() !== monthIndex) {
+        if (startOfWeek.month() !== monthIndex) {
           startOfWeek = currentDate;
         }
-        if(endOfWeek.month() !== monthIndex) {
+        if (endOfWeek.month() !== monthIndex) {
           endOfWeek = currentDate.clone().endOf('month');
         }
-
-        let weekStr = `Semaine ${weekNumber} - `;
-
-        if(startOfWeek.month() !== monthIndex && endOfWeek.month() === monthIndex) {
-          weeks.push(weekStr + `du ${startOfWeek.date()} ${this.monthNames[startOfWeek.month()]} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
-        } else if (startOfWeek.month() === monthIndex && endOfWeek.month() !== monthIndex) {
-          weeks.push(weekStr + `du ${startOfWeek.date()} ${this.monthNames[monthIndex]} au ${endOfWeek.date()} ${this.monthNames[endOfWeek.month()]}`);
-        } else {
-          weeks.push(weekStr + `du ${startOfWeek.date()} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`);
-        }
+        let week = {
+              label: `Semaine ${weekNumber} - du ${startOfWeek.date()} au ${endOfWeek.date()} ${this.monthNames[monthIndex]}`,
+              start: startOfWeek.toDate(),
+              end: endOfWeek.toDate()
+            }
+        weeks.push(week);
         currentDate.add(1, 'week');
       }
       return weeks;
+    },
+    getWeekDaysByWeekNumber() {
+      const startOfWeek = moment().isoWeek(this.selectedWeek).startOf('isoWeek');
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        let day = {
+          label: startOfWeek.clone().add(i, 'days').format('dddd DD/MM'),
+          start: startOfWeek.clone().add(i, 'days').startOf('day').toDate(),
+          end: startOfWeek.clone().add(i, 'days').endOf('day').toDate()
+        }
+        days.push(day);
+      }
+      return days;
     },
     monthNames() {
       return ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -125,10 +147,20 @@ export default {
       return this.chart('Heures travaillées en ' + this.selectedYear + ' : ' + this.yearsHours + 'h', this.monthNames, this.allHoursOfMonth)
     },
     chartDataForMonth() {
-      return this.chart('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h', this.weeksInSelectedMonth, this.allHoursOfWeek)
+      return this.chart('Heures travaillées en ' + this.selectedMonth + ' : ' + this.monthsHours + 'h', this.weeksInSelectedMonth.map(week => week.label), this.allHoursOfWeek);
+    },
+    chartDataForWeek() {
+      return this.chart('Heures travaillées durant la semaine ' + this.selectedWeek + ' : ' + this.weeksHours + 'h', this.getWeekDaysByWeekNumber.map(day => day.label), this.allHoursOfDay)
     },
     component () {
       return this.getComponent;
+    },
+    allWeeks () {
+      const weeks = [];
+      for (let i = 1; i <= 52; i++) {
+        weeks.push(i);
+      }
+      return weeks;
     }
   },
 
@@ -144,6 +176,8 @@ export default {
 
   async mounted () {
     await this.getWorkingYearTimes()
+    await this.getWorkingMonthTimes()
+    await this.getWorkingWeekTimes()
   },
 
   methods: {
@@ -167,10 +201,10 @@ export default {
       }
     },
     estimationHours(data) {
-      const startMoment = moment(data.start, 'YYYY-MM-DDTHH:mm:ssZ').valueOf();
-      const endMoment = moment(data.end, 'YYYY-MM-DDTHH:mm:ssZ').valueOf();
-      const result = (endMoment - startMoment) / 1000 / 60 / 60;
-      return parseFloat(result.toFixed(2));
+      const startMoment = moment(data.start);
+      const endMoment = moment(data.end);
+      const duration = moment.duration(endMoment.diff(startMoment));
+      return parseFloat(duration.asHours().toFixed(2));
     },
     async calculateHoursForPeriod(start, end) {
       const allTimes = await this.getWorkingTimes(start, end);
@@ -178,34 +212,51 @@ export default {
     },
     async getWorkingYearTimes() {
       this.dataLoaded = false;
-      const start = new Date(this.selectedYear, 0, 1);
-      const end = new Date(this.selectedYear, 11, 31);
-      this.yearsHours = await this.calculateHoursForPeriod(start, end);
+      const start = moment().year(this.selectedYear).startOf('year');
+      const end = moment().year(this.selectedYear).endOf('year');
+      this.yearsHours = await this.calculateHoursForPeriod(start.toDate(), end.toDate());
 
       const promises = [];
-      for (let i = 0; i < 11; i++) {
-        const startMonth = new Date(this.selectedYear, i, 1);
-        const endMonth = new Date(this.selectedYear, i + 1, 0);
-        promises.push(this.calculateHoursForPeriod(startMonth, endMonth));
+      for (let i = 0; i < 12; i++) {
+        const startMonth = moment().year(this.selectedYear).month(i).startOf('month');
+        const endMonth = moment().year(this.selectedYear).month(i).endOf('month');
+        promises.push(this.calculateHoursForPeriod(startMonth.toDate(), endMonth.toDate()));
       }
       this.allHoursOfMonth = await Promise.all(promises);
-      await this.getWorkingMonthTimes();
       this.dataLoaded = true;
     },
     async getWorkingMonthTimes() {
       this.dataLoaded = false;
       const monthIndex = this.monthNames.indexOf(this.selectedMonth);
-      const start = new Date(this.selectedYear, monthIndex, 1);
-      const end = new Date(this.selectedYear, monthIndex + 1, 0);
-      this.monthsHours = await this.calculateHoursForPeriod(start, end);
+      const start = moment().year(this.selectedYear).month(monthIndex).startOf('month');
+      const end = moment().year(this.selectedYear).month(monthIndex).endOf('month');
+      this.monthsHours = await this.calculateHoursForPeriod(start.toDate(), end.toDate());
 
       const promises = [];
-      for (let i = 0; i < this.weeksInSelectedMonth.length; i++) {
-        const startWeek = new Date(this.selectedYear, monthIndex, i * 7 + 1);
-        const endWeek = new Date(this.selectedYear, monthIndex, (i + 1) * 7);
-        promises.push(this.calculateHoursForPeriod(startWeek, endWeek));
+      for (let week of this.weeksInSelectedMonth) {
+        const startWeek = moment(week.start);
+        const endWeek = moment(week.end);
+        promises.push(this.calculateHoursForPeriod(startWeek.toDate(), endWeek.toDate()));
       }
       this.allHoursOfWeek = await Promise.all(promises);
+      this.dataLoaded = true;
+    },
+    async getWorkingWeekTimes() {
+      this.dataLoaded = false;
+      const monthIndex = this.monthNames.indexOf(this.selectedMonth);
+      const firstDayOfMonth = moment([this.selectedYear, monthIndex]);
+      const startOfWeek = firstDayOfMonth.clone().add(this.selectedWeek - 1, 'weeks').startOf('week');
+      const endOfWeek = startOfWeek.clone().endOf('week');
+      this.weeksHours = await this.calculateHoursForPeriod(startOfWeek.toDate(), endOfWeek.toDate());
+
+      const promises = [];
+      for (let day of this.getWeekDaysByWeekNumber) {
+        const startDay = moment(day.start);
+        const endDay = moment(day.end);
+        promises.push(this.calculateHoursForPeriod(startDay, endDay));
+      }
+
+      this.allHoursOfDay = await Promise.all(promises);
       this.dataLoaded = true;
     },
     chart (title, label, data) {
@@ -245,7 +296,6 @@ export default {
       this.$emit('hide', true);
     }
   },
-
 }
 
 </script>

@@ -238,7 +238,7 @@
           />
         </div>
       </div>
-      <div>
+      <div v-if="currentUser.role === 'manager'|| 'supermanager'">
         <select
             v-model="roleSelected"
         >

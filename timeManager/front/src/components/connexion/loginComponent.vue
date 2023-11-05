@@ -21,7 +21,6 @@
 </template>
 
 <script>
-
 export default {
     name: "LoginComponent",
     data() {
@@ -48,7 +47,10 @@ export default {
                 this.email;
             const user = await fetch(url).then((res) => res.json());
 
-            this.connected = !!user;
+            if (user.data.length > 0) {
+                localStorage.setItem("user", JSON.stringify(user.data[0]));
+                this.connected = true;
+            }
         },
     },
 };

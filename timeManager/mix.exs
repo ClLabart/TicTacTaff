@@ -34,7 +34,9 @@ defmodule TimeManager.MixProject do
     [
       {:phoenix, "~> 1.7.9"},
       {:phoenix_ecto, "~> 4.4"},
+      {:calendar, "~> 0.17"},
       {:ecto_sql, "~> 3.10"},
+      {:timex, "~> 3.7"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},

@@ -1,33 +1,26 @@
 <template>
   <div>
-    <button class="bg-transparent rounded border-2 border-black p-1.5" @click="clock">{{ "Pointer votre " + (!clockIn ? "arrivée" : "départ") }}</button>
-    <p>{{ clockIn ? "Service en cours" : "Service en pause" }}</p>
-    
-
-    <div class="bg-transparent rounded border-2 border-black p-1.5 flex">
-      <button :disabled=clockOut @click="clock">Pointer</button>
-      <button :disabled=clockIn @click="clock">Stopper</button>
+    <div class="bg-transparent rounded  p-1.5 flex flex-col gap-5">
+      <button class="border-2 border-black" @click="clock('pointer')">Pointer</button>
+      <button class="border-2 border-black" @click="clock('stop')">Stopper</button>
+    </div>
+    <div>
+      <p></p>
     </div>
 
-    <div v-for="divItem in divs" :key="divItem.id" class="bg-slate-800 flex ">
+    <div v-for="divItem in this.divs" :key="divItem.id" class="flex flex-col">
       <p>Heure du pointage : {{ divItem.checkTime }}</p>
-      <p>Heure de stop : {{ divItem.stopTime ? divItem.stopTime : '' }}</p>
-      <p>Heure total de travail dans la journée : {{ divItem.totalHours +  }}</p>
+      <p>Heure de stop : {{ divItem.stopTime }}</p>
     </div>
 
+    <div>
+      <p>Heures totales de travail dans la journée : {{ this.totalHours != 0 ? buildTotalHour() : '' }}</p>
+    </div>
 
-    
   </div>
   <div>
 
   </div>
-  <!-- <div> 
-    <div v-for="divItem in divs" :key="divItem.id" class="bg-slate-800 flex flex-col gap-y-4">
-      <p class="text-white">Date du pointage : {{ divItem.checkTime }}</p>
-      <p class="text-white">Temps passé en service : </p>
-      <p class="text-white">Nombre de pointages de la journée : {{ divItem.clocksNumber }}</p>
-    </div>
-  </div> -->
 </template>
 
 <script>
@@ -37,18 +30,15 @@ export default {
   
   data() {
     return {
-      
-      startDatetime: null,
-      endDatetime: null,
-      numberOfClocks: 0,
 
       clockIn: false,
-      clockOut: false,
+      clockOut: true,
       actualHour: null,
       totalHours: 0,
       stopHour: null,
-      arrivedHour: null,
       countClockInOut: 0,
+      countClickStopButton: 0,
+      clockID: 1,
       userClocks: [],
       divs: [],
 
@@ -59,15 +49,31 @@ export default {
 
     // Récupération de la date actuelle
     this.actualHour = new Date();
-
+    let actualHourDay = this.actualHour.getDate();
+    
     // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
     await this.getClocks(1);
+
+    // Si le tableau contient des clocks
+    if(localStorage.getItem('clocksUser') && localStorage.getItem('clockTotalHours')) {
+      this.totalHours = parseInt(localStorage.getItem('clockTotalHours'));
+      this.divs = JSON.parse(localStorage.getItem('clocksUser'));
+    }
+
+
     let lastClock = this.userClocks[this.userClocks.length - 1];
     let lastClockDay = new Date(lastClock.time).getDate();
 
-    if(lastClockDay != this.actualHour) {
-      this.refresh()
+    if(lastClockDay != actualHourDay) {
+      this.refresh();
+      this.divs = [];
+
+      localStorage.removeItem('clocksUser');
+      localStorage.setItem('clockTotalHours', '00h00m00s');
     }
+
+
+   
   },
 
   methods: {
@@ -83,8 +89,6 @@ export default {
       console.log(data)
     },
 
-    
-
     async getClocks(userId) {
       try {
         const response = await fetch('http://localhost:4000/api/clocks/' + userId);
@@ -95,151 +99,132 @@ export default {
 
         this.userClocks = data.data;
 
-        // console.log(data.data)
-
-        // data.data.forEach(clock => {
-        //   let milliseconds = Date.parse(clock.time)
-        //   let time = this.formatDateTime(milliseconds)
-        //   this.addDivClock(clock.id, time, this.numberOfClocks)
-        // });
-
       } catch (error) {
         console.error('Error:', error);
       }
     },
 
-    formatDateTime(milliseconds) {
-      const date = new Date(milliseconds);
-
-      const year = date.getUTCFullYear();
-      const month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
-      const day = date.getUTCDate().toString().padStart(2, '0');
-      const hours = date.getUTCHours().toString().padStart(2, '0');
-      const minutes = date.getUTCMinutes().toString().padStart(2, '0');
-      const seconds = date.getUTCSeconds().toString().padStart(2, '0');
-
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    },
-
-    // La fonction refresh() permet de remettre à null : startDatetime, endDatetime, clockIn
-    // refresh() {
-    //   this.startDatetime = null;
-    //   this.endDatetime = null;
-    //   this.clockIn = false;
-    //   this.numberOfClocks = 0;
-    // }, ANCIENNE
-
+    // La fonction refresh() permet de reset les valeurs des variables
     refresh() {
-      this.arrivedHour = null;
+
       this.stopHour = null;
-
       this.clockIn = false;
-      this.clockOut = false;
-
+      this.clockOut = true;
       this.countClockInOut = 0;
+
     },
 
-    // addDivClock(id, time, clocksNumber) {
-    //   this.divs.push({ id: id, checkTime: time, clocksNumber: clocksNumber });
-    // }, // ANCIENNE
-
-    addDivClock(checkTime = 0, stopTime = null) {
-      this.divs.push({ checkTime: checkTime, stopTime: stopTime });
+    // La fonction buildTime() permet de formater une date au bon format pour l'afficher
+    buildTime(date) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const secondes = date.getSeconds().toString().padStart(2, '0');
+      const formatedHour = `${hours}h:${minutes}m:${secondes}s`;
+      return formatedHour;
     },
 
-    createDatetime() {
-      const actualDate = new Date();
-      actualDate.setUTCHours(actualDate.getUTCHours() + 2);
-      return actualDate.toISOString();
+    // La fonction buildTotalHour() permet de construire le temps total de travail de l'utilisateur au format : 'HH:mm:ss'
+    buildTotalHour() {
+      const heures = Math.floor(this.totalHours / 3600000); // 1 heure = 3600000 millisecondes
+      const minutes = Math.floor((this.totalHours % 3600000) / 60000); // 1 minute = 60000 millisecondes
+      const secondes = Math.floor((this.totalHours % 60000) / 1000); // 1 seconde = 1000 millisecondes
+      const tempsTotal = `${heures.toString().padStart(2, '0')}h${minutes.toString().padStart(2, '0')}m${secondes.toString().padStart(2, '0')}s`;
+      return tempsTotal
+    },
+
+    // La fonction addDivClock() permet d'ajouter des données pour une nouvelle div d'affichage
+    addDivClock(checkTime) {
+      if(this.clockID != 1)
+      {
+        this.clockID++;
+      }
+
+      let formatedHour = this.buildTime(checkTime)
+      let clockObject = {id: this.clockID, checkTime: formatedHour, stopTime: '00h00m00s'};
+      this.divs.push(clockObject)
+
+      if(localStorage.getItem('clocksUser')) {
+
+        const clocksArray = JSON.parse(localStorage.getItem('clocksUser'));
+        clocksArray.push(clockObject);
+        const clocksArrayUpdate = JSON.stringify(clocksArray);
+        localStorage.setItem('clocksUser', clocksArrayUpdate);
+
+      }
+      else {
+        localStorage.setItem('clocksUser', JSON.stringify(this.divs));
+      }     
     },
 
     // La fonction clock() permet de changer d'état la pointeuse 
-    async clock() {
-
-      // Si la session de travail est en cours
-      if(this.clockIn && this.clockOut === false) {
-
-        // Affichage de l'heure actuelle
-        this.stopHour = new Date().toLocaleTimeString('fr-FR')
-
-        
-
-        // Calculer les heures de travail effectuées de la période d'arrivée à stop
-        // en retournant le bon format pour affichage
-        let hour = this.stopHour - this.arrivedHour;
-
-
-
-        this.addDivClock(this.arrivedHour,this.stopHour, hour);
-
-
-        
-
-
-
-      }
+    async clock(typeButton) {
 
       // Si la session de travail est arrêtée
-      if(this.clockOut && this.clockIn === false) {
-        this.clockIn = !this.clockIn;
-        this.clockOut = !this.clockOut;
+      if(typeButton === 'pointer')
+      {
+        if(this.clockOut && this.clockIn === false) {
+
+          this.clockIn = true;
+          this.clockOut = false;
+
+          this.actualHour = new Date();
 
 
-        if(this.countClockInOut === 2) {
-          this.refresh()
-          this.arrivedHour = new Date()
-
+          if(this.countClockInOut === 2) {
+            this.countClockInOut = 1;
+            await this.postClock(1,this.clockIn, this.actualHour.toISOString())
+            this.addDivClock(this.actualHour)
+          }
+          else {
+            this.countClockInOut++;
+            await this.postClock(1,this.clockIn, this.actualHour.toISOString())
+            this.addDivClock(this.actualHour)
+          }
           
-
-          // Faire nouvelle div
-          this.addDivClock()
-          this.actualHour = new Date()
         }
-        else {
+      }
+
+      if(typeButton === 'stop') {
+
+        // Si la session de travail est en cours
+        if(this.clockIn && this.clockOut === false) {
+          this.clockIn = false
+          this.clockOut = true
+
+          // Affichage de l'heure actuelle + Ajout du stopTime dans sa div d'affichage
+          this.stopHour = new Date();
+          this.divs[this.divs.length - 1].stopTime = this.buildTime(this.stopHour);
+
+          if(localStorage.getItem('clocksUser')) {
+            localStorage.setItem('clocksUser', JSON.stringify(this.divs));
+          }
+      
           this.countClockInOut++;
+          this.countClickStopButton++;
 
+          if(this.countClickStopButton === 2) {
+
+            this.totalHours = this.totalHours + (this.stopHour - this.actualHour)
+            this.countClickStopButton = 1;
+
+            if(localStorage.getItem('clockTotalHours')) {
+              let clockTotalHours = parseInt(localStorage.getItem('clockTotalHours'));
+              clockTotalHours = clockTotalHours + this.totalHours;
+              localStorage.setItem('clockTotalHours', clockTotalHours)
+            }    
+            
+
+          }
+          else {
+
+            this.totalHours = this.stopHour - this.actualHour;
+            localStorage.setItem('clockTotalHours', this.totalHours);
+            
+          }
+
+          // Push le clock en BDD
+          await this.postClock(1, false, this.stopHour.toISOString())
         }
-
-      }
-      
-      
-      // 2. On regarde l'état de la pointeuse
-      if(this.clockIn == false) {
-
-        // Cas : Lorsque l'utilisateur pointe
-        this.clockIn = !this.clockIn
-        // this.startDatetime = this.createDatetime();
-        this.startDatetime = new Date().toISOString();
-        // this.numberOfClocks++;
-
-        console.log("startDatetime :", this.startDatetime)
-        console.log("clockIn :", this.clockIn)
-
-        this.divs = []
-        
-
-        await this.postClock(1, this.clockIn, this.startDatetime) // Besoin de récupérer l'id de l'utilisateur
-
-        await this.getClocks(1)
-        // Besoin de récupérer l'id de l'utilisateur
-      
-      }
-      else {
-        // Cas : Lorsque l'utilisateur dépointe
-        this.clockIn = !this.clockIn
-        this.endDatetime = this.createDatetime();
-        this.numberOfClocks++;
-
-        this.divs = []
-
-        console.log("startDatetime :", this.startDatetime)
-        console.log("endDatetime :", this.endDatetime)
-        console.log("clockIn :", this.clockIn)
-
-        this.postClock(1, this.clockIn, this.endDatetime) // Besoin de récupérer l'id de l'utilisateur
-
-        this.getClocks(1) // Besoin de récupérer l'id de l'utilisateur
-        
 
       }
       

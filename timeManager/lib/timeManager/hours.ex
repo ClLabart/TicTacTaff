@@ -4,6 +4,9 @@ defmodule TimeManager.Hours do
   """
 
   import Ecto.Query, warn: false
+  require Logger
+  require Timex
+
   alias TimeManager.Repo
 
   alias TimeManager.Hours.Clock
@@ -22,23 +25,25 @@ defmodule TimeManager.Hours do
   end
 
   def find_user!(id) do
-    query = from(c in Clock, where: c.user == ^id)
+    # current_datetime = DateTime.now("Etc/UTC")
+
+    # IO.puts(current_datetime)
+
+    query =
+      from(c in Clock,
+        where:
+          c.user == ^id and c.time >= ^"2023-11-03T00:00:00Z" and
+            c.time <= ^"2023-11-03T23:59:59Z",
+        select: c
+      )
+
     Repo.all(query)
   end
 
-  @doc """
-  Returns the list of clocks by a user.
-
-  ## Examples
-
-      iex> list_clocks()
-      [%Clock{}, ...]
-
-  """
-  def get_clock_by_user!(id) do
-    query = from c in Clock, where: c.user == ^id
-    Repo.all(query)
-  end
+  # def get_clock_by_user!(id) do
+  #   query = from(c in Clock, where: c.user == ^id)
+  #   Repo.all(query)
+  # end
 
   @doc """
   Gets a single clock.

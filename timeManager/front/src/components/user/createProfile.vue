@@ -238,7 +238,7 @@
           />
         </div>
       </div>
-      <div v-if="currentUser.role === 'manager'|| 'supermanager'">
+      <div v-if="userConnected.role === 'manager'|| 'supermanager'">
         <select
             v-model="roleSelected"
         >
@@ -281,10 +281,13 @@ export default {
 
 
   computed: {
-    ...mapGetters('user', ['userSelected']),
+    ...mapGetters('user', ['userSelected', 'currentUser']),
     checkPassword () {
       return this.password === this.verifyPassword;
     },
+    userConnected() {
+      return this.currentUser;
+    }
   },
 
   methods: {

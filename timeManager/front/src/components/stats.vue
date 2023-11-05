@@ -1,6 +1,6 @@
 <template>
   <div class="relative">
-    <div>
+    <div v-if="user.id !== currentUser.id">
       <button
           type="submit"
           class="text-white absolute left-2.5 top-2.5 bg-red-400 hover:bg-red-300 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -90,11 +90,12 @@ export default {
     user: {
       type: Object,
       required: true
-    }
+    },
   },
 
   computed : {
     ...mapGetters('component', ['getComponent']),
+    ...mapGetters('user', ['currentUser']),
     generateYears () {
       const years = []
       const currentYear = new Date().getFullYear()

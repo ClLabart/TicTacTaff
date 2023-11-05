@@ -60,6 +60,7 @@
 <script>
 import BarChart from "@/components/graphs/barChart.vue";
 import moment from 'moment'
+import 'moment/locale/fr'
 import { mapGetters } from "vuex";
 
 export default {
@@ -108,9 +109,9 @@ export default {
       let currentDate = moment().year(this.selectedYear).month(monthIndex).startOf('month');
 
       while (currentDate.month() === monthIndex) {
-        let startOfWeek = currentDate.clone().startOf('week');
-        let endOfWeek = currentDate.clone().endOf('week');
-        const weekNumber = currentDate.week();
+        let startOfWeek = currentDate.clone().startOf('isoWeek');
+        let endOfWeek = currentDate.clone().endOf('isoWeek');
+        const weekNumber = currentDate.isoWeek();
         if (startOfWeek.month() !== monthIndex) {
           startOfWeek = currentDate;
         }
@@ -172,7 +173,6 @@ export default {
         }
       }
   },
-
 
   async mounted () {
     await this.getWorkingYearTimes()
@@ -236,7 +236,7 @@ export default {
       for (let week of this.weeksInSelectedMonth) {
         const startWeek = moment(week.start);
         const endWeek = moment(week.end);
-        promises.push(this.calculateHoursForPeriod(startWeek.toDate(), endWeek.toDate()));
+        promises.push(this.calculateHoursForPeriod(startWeek, endWeek));
       }
       this.allHoursOfWeek = await Promise.all(promises);
       this.dataLoaded = true;
@@ -245,8 +245,8 @@ export default {
       this.dataLoaded = false;
       const monthIndex = this.monthNames.indexOf(this.selectedMonth);
       const firstDayOfMonth = moment([this.selectedYear, monthIndex]);
-      const startOfWeek = firstDayOfMonth.clone().add(this.selectedWeek - 1, 'weeks').startOf('week');
-      const endOfWeek = startOfWeek.clone().endOf('week');
+      const startOfWeek = firstDayOfMonth.clone().add(this.selectedWeek - 1, 'weeks').startOf('isoWeek');
+      const endOfWeek = startOfWeek.clone().endOf('isoWeek');
       this.weeksHours = await this.calculateHoursForPeriod(startOfWeek.toDate(), endOfWeek.toDate());
 
       const promises = [];

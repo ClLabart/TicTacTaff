@@ -292,6 +292,8 @@ export default {
         this.username = newVal.data.username;
         this.email = newVal.data.email;
         this.id = newVal.data.id;
+        this.firstname = newVal.data.firstname;
+        this.lastname = newVal.data.lastname;
       }
     }
   },

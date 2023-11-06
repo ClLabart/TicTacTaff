@@ -239,6 +239,15 @@
           />
         </div>
       </div>
+      <div v-if="currentUser.role === ('manager'|| 'supermanager')">
+        <select
+            v-model="roleSelected"
+        >
+          <option v-for="(role, index) in roles" :key="index">
+            {{role}}
+          </option>
+        </select>
+      </div>
       <div class="flex gap-10 mt-5">
         <button
             @click="deleteUser"
@@ -273,11 +282,13 @@ export default {
       password: "",
       verifyPassword: "",
       id: null,
+      roleSelected: "",
+      roles: ['user', 'manager', 'supermanager']
     };
   },
 
   computed: {
-    ...mapGetters('user', ['userSelected']),
+    ...mapGetters('user', ['userSelected', 'currentUser']),
     checkPassword () {
       return this.password === this.verifyPassword;
     },
@@ -294,6 +305,7 @@ export default {
         this.id = newVal.data.id;
         this.firstname = newVal.data.firstname;
         this.lastname = newVal.data.lastname;
+        this.roleSelected = newVal.data.role;
       }
     }
   },
@@ -304,6 +316,7 @@ export default {
       this.id = this.getUser.data.id;
       this.firstname = this.getUser.data.firstname;
       this.lastname = this.getUser.data.lastname;
+      this.roleSelected = this.getUser.data.role;
   },
 
 
@@ -330,6 +343,7 @@ export default {
             password: this.password,
             firstname: this.firstname,
             lastname: this.lastname,
+            role: this.roleSelected
           }
 
         };

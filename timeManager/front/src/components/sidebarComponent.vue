@@ -55,6 +55,7 @@
                         Pointeuse
                     </li>
                     <li
+                        v-if="currentUser.role === ('manager' || 'supermanager')"
                         :class="[
                             component.type === 'workingTimes'
                                 ? active

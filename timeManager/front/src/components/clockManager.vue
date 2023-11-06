@@ -5,7 +5,7 @@
       <button class="border-2 border-black" @click="clock('stop')">Stopper</button>
     </div>
     <div>
-      <p></p>
+      <p>{{  }}</p>
     </div>
 
     <div v-for="divItem in this.divs" :key="divItem.id" class="flex flex-col">
@@ -14,7 +14,7 @@
     </div>
 
     <div>
-      <p>Heures totales de travail dans la journée : {{ this.totalHours != 0 ? buildTotalHour() : '' }}</p>
+      <p>Heures totales de travail dans la journée : {{ this.displayTotalHours != 0 ? buildTotalHour() : '' }}</p>
     </div>
 
   </div>
@@ -33,9 +33,9 @@ export default {
 
       clockIn: false,
       clockOut: true,
-      actualHour: null,
+      actualHour: 0,
       totalHours: 0,
-      stopHour: null,
+      stopHour: 0,
       countClockInOut: 0,
       countClickStopButton: 0,
       clockID: 1,
@@ -53,10 +53,16 @@ export default {
     
     // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
     await this.getClocks(1);
+    
+    if(!localStorage.getItem('clockTotalHours')) {
+      localStorage.setItem('clockTotalHours','0')
+    }
 
     // Si le tableau contient des clocks
-    if(localStorage.getItem('clocksUser') && localStorage.getItem('clockTotalHours')) {
-      this.totalHours = parseInt(localStorage.getItem('clockTotalHours'));
+    if(localStorage.getItem('clocksUser')) {
+      
+      this.totalHours = parseInt(localStorage.getItem('clockTotalHours')) 
+      console.log(this.totalHours)
       this.divs = JSON.parse(localStorage.getItem('clocksUser'));
     }
 
@@ -67,13 +73,19 @@ export default {
     if(lastClockDay != actualHourDay) {
       this.refresh();
       this.divs = [];
-
+      console.log("test2")
       localStorage.removeItem('clocksUser');
-      localStorage.setItem('clockTotalHours', '00h00m00s');
+      localStorage.setItem('clockTotalHours', '0');
     }
 
 
    
+  },
+
+  computed: {
+    displayTotalHours () {
+      return this.totalHours
+    }
   },
 
   methods: {
@@ -125,6 +137,7 @@ export default {
 
     // La fonction buildTotalHour() permet de construire le temps total de travail de l'utilisateur au format : 'HH:mm:ss'
     buildTotalHour() {
+      console.log(this.totalHours)
       const heures = Math.floor(this.totalHours / 3600000); // 1 heure = 3600000 millisecondes
       const minutes = Math.floor((this.totalHours % 3600000) / 60000); // 1 minute = 60000 millisecondes
       const secondes = Math.floor((this.totalHours % 60000) / 1000); // 1 seconde = 1000 millisecondes
@@ -158,10 +171,12 @@ export default {
 
     // La fonction clock() permet de changer d'état la pointeuse 
     async clock(typeButton) {
+      console.log(this.countClockInOut)
 
       // Si la session de travail est arrêtée
       if(typeButton === 'pointer')
       {
+        
         if(this.clockOut && this.clockIn === false) {
 
           this.clockIn = true;
@@ -180,6 +195,8 @@ export default {
             await this.postClock(1,this.clockIn, this.actualHour.toISOString())
             this.addDivClock(this.actualHour)
           }
+
+          
           
         }
       }
@@ -201,27 +218,33 @@ export default {
       
           this.countClockInOut++;
           this.countClickStopButton++;
+          console.log('count stop button', this.countClickStopButton)
+          
 
-          if(this.countClickStopButton === 2) {
+          this.totalHours += this.stopHour - this.actualHour
+          this.countClickStopButton = 1;
 
-            this.totalHours = this.totalHours + (this.stopHour - this.actualHour)
-            this.countClickStopButton = 1;
-
-            if(localStorage.getItem('clockTotalHours')) {
-              let clockTotalHours = parseInt(localStorage.getItem('clockTotalHours'));
-              clockTotalHours = clockTotalHours + this.totalHours;
-              localStorage.setItem('clockTotalHours', clockTotalHours)
-            }    
+          if(localStorage.getItem('clockTotalHours')) {
             
+            let clockTotalHours = parseInt(localStorage.getItem('clockTotalHours'));
+            console.log('total hours initial', clockTotalHours)
+            clockTotalHours += this.stopHour - this.actualHour;
+            console.log('total hours final', clockTotalHours)
+            localStorage.setItem('clockTotalHours', clockTotalHours);
 
-          }
-          else {
-
-            this.totalHours = this.stopHour - this.actualHour;
-            localStorage.setItem('clockTotalHours', this.totalHours);
+          }    
             
-          }
-
+          
+          // else {
+          //   console.log('stop hours ', this.stopHour)
+          //   console.log('actual hours ', this.actualHour)
+          
+          //   this.totalHours = this.stopHour - this.actualHour;
+          //   localStorage.setItem('clockTotalHours', this.totalHours);
+          //   console.log(this.totalHours)
+            
+          // }
+          
           // Push le clock en BDD
           await this.postClock(1, false, this.stopHour.toISOString())
         }

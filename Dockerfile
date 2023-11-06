@@ -7,6 +7,8 @@ COPY ./timeManager /app
 
 COPY ./entrypoint.sh /
 
+RUN rm /app/config/dev.local.exs
+
 RUN mix local.hex --force
 RUN mix deps.get
 

@@ -19,7 +19,21 @@ defmodule TimeManagerWeb.UsersJSON do
     %{
       id: users.id,
       username: users.username,
-      email: users.email
+      email: users.email,
+      role: users.role,
+      firstname: users.firstname,
+      lastname: users.lastname,
+      team: if is_nil(users.team) do
+            %{
+              team_id: nil,
+              team_name: nil
+            }
+          else
+            %{
+              team_id: users.team.id,
+              team_name: users.team.name
+            }
+          end
     }
   end
 end

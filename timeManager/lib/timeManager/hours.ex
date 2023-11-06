@@ -32,8 +32,8 @@ defmodule TimeManager.Hours do
     query =
       from(c in Clock,
         where:
-          c.user == ^id and c.time >= ^"2023-11-03T00:00:00Z" and
-            c.time <= ^"2023-11-03T23:59:59Z",
+          c.user == ^id and c.time >= ^"2023-11-06T00:00:00Z" and
+            c.time <= ^"2023-11-06T23:59:59Z",
         select: c
       )
 

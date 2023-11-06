@@ -6,6 +6,84 @@
     <form @submit.prevent="" class="flex flex-col gap-5">
       <div>
         <label
+            for="nom"
+            class="block text-sm font-medium leading-6 text-gray-900"
+        >
+          Nom
+        </label>
+        <div class="relative mt-2 rounded-md shadow-sm">
+          <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="{1.5}"
+                stroke="currentColor"
+                className="w-3 h-3"
+                style="margin-left: -0.3em"
+                height="1em"
+            >
+              <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+          </div>
+
+          <input
+              type="text"
+              name="nom"
+              id="nom"
+              class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="vérification du mot de passe"
+              v-model="firstname"
+          />
+        </div>
+      </div>
+      <div>
+        <label
+            for="password"
+            class="block text-sm font-medium leading-6 text-gray-900"
+        >
+          Prénom
+        </label>
+        <div class="relative mt-2 rounded-md shadow-sm">
+          <div
+              class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+          >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="{1.5}"
+                stroke="currentColor"
+                className="w-3 h-3"
+                style="margin-left: -0.3em"
+                height="1em"
+            >
+              <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
+            </svg>
+          </div>
+
+          <input
+              type="text"
+              name="prenom"
+              id="prenom"
+              class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="vérification du mot de passe"
+              v-model="lastname"
+          />
+        </div>
+      </div>
+      <div>
+        <label
             for="pseudonyme"
             class="block text-sm font-medium leading-6 text-gray-900"
         >
@@ -160,6 +238,15 @@
           />
         </div>
       </div>
+      <div v-if="userConnected.role === 'manager'|| 'supermanager'">
+        <select
+            v-model="roleSelected"
+        >
+          <option v-for="(role, index) in roles" :key="index">
+            {{role}}
+          </option>
+        </select>
+      </div>
       <div class="flex gap-10 mt-5">
         <button
             @click="createUser"
@@ -181,19 +268,26 @@ export default {
 
   data() {
     return {
+      firstname: "",
+      lastname: "",
       username: "",
       email: "",
       password: "",
       verifyPassword: "",
+      roles: ["user", "manager"],
+      roleSelected: "",
     };
   },
 
 
   computed: {
-    ...mapGetters('user', ['userSelected']),
+    ...mapGetters('user', ['userSelected', 'currentUser']),
     checkPassword () {
       return this.password === this.verifyPassword;
     },
+    userConnected() {
+      return this.currentUser;
+    }
   },
 
   methods: {
@@ -206,8 +300,12 @@ export default {
       } else {
         const body = {
           users: {
+            firstname: this.firstname,
+            lastname: this.lastname,
+            password: this.password,
             username: this.username,
-            email: this.email
+            email: this.email,
+            role: this.roleSelected,
           }
         }
         await this.create(body);

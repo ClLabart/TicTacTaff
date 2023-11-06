@@ -55,7 +55,7 @@
                         Pointeuse
                     </li>
                     <li
-                        v-if="currentUser.role === ('manager' || 'supermanager')"
+                        v-if="currentUser.role === 'supermanager'"
                         :class="[
                             component.type === 'workingTimes'
                                 ? active
@@ -76,7 +76,7 @@
                                 fill="black"
                             />
                         </svg>
-                        Temps
+                        Statistiques
                     </li>
                 </ul>
             </article>

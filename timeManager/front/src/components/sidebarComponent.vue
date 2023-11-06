@@ -5,8 +5,8 @@
             <img :src="profileImage" alt="Logo de Batman" class="h-12 w-auto" />
             <div>
                 <!-- Nom d'utilisateur -->
-                <p>Bonjour 🤝</p>
-                <p>{{ username }}</p>
+                <p>{{ currentUser.firstname }}</p>
+                <p>{{ currentUser.lastname }}</p>
             </div>
         </section>
 

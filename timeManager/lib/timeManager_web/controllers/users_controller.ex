@@ -47,6 +47,7 @@ defmodule TimeManagerWeb.UsersController do
 
   def update(conn, %{"id" => id, "users" => users_params}) do
     users = Accounts.get_users!(id)
+    users = Repo.preload(users, :team)
 
     with {:ok, %Users{} = users} <- Accounts.update_users(users, users_params) do
       render(conn, :show, users: users)

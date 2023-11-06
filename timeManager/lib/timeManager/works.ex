@@ -6,6 +6,7 @@ defmodule TimeManager.Works do
   import Ecto.Query, warn: false
   alias TimeManager.Repo
 
+  alias TimeManager.Accounts.Users
   alias TimeManager.Works.WorkingTime
 
   @doc """
@@ -77,6 +78,73 @@ defmodule TimeManager.Works do
   def list_workingtimes_by_user_start_end(id, start, endV) do
     query = from w in WorkingTime,
       where: w.user == ^id and w.start >= ^start and w.end <= ^endV
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns the list of workingtimes by team.
+
+  ## Examples
+
+      iex> list_workingtimes_by_team()
+      [%WorkingTime{}, ...]
+  """
+  def list_workingtimes_by_team(id) do
+    query = from w in WorkingTime,
+      join: u in Users,
+      on: u.id == w.user,
+      where: u.team_id == ^id
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a team based on the start time.
+
+  ## Example
+
+      iex> list_workingtimes_by_team_start(1, ~U[2022-01-01 09:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_team_start(id, start) do
+    query = from w in WorkingTime,
+      join: u in Users,
+      on: u.id == w.user,
+      where: u.team_id == ^id and w.start >= ^start
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a team based on the end time.
+
+  ## Example
+
+      iex> list_workingtimes_by_team_end(1, ~U[2022-01-01 17:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_team_end(id, endV) do
+    query = from w in WorkingTime,
+      join: u in Users,
+      on: u.id == w.user,
+      where: u.team_id == ^id and w.end <= ^endV
+    Repo.all(query)
+  end
+
+  @doc """
+  Returns a list of working times for a team based on the start and end times.
+
+  ## Example
+
+      iex> list_workingtimes_by_team_start_end(1, ~U[2022-01-01 09:00:00Z], ~U[2022-01-01 17:00:00Z])
+      [%WorkingTime{}, ...]
+
+  """
+  def list_workingtimes_by_team_start_end(id, start, endV) do
+    query = from w in WorkingTime,
+      join: u in Users,
+      on: u.id == w.user,
+      where: u.team_id == ^id and w.start >= ^start and w.end <= ^endV
     Repo.all(query)
   end
 

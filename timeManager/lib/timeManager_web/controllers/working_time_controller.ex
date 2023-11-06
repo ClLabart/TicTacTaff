@@ -78,4 +78,30 @@ defmodule TimeManagerWeb.WorkingTimeController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def alltimes(conn, params) do
+    # Avoir les working times en fonction d'une équipe
+    # Avec en params possible start et end
+    id = Map.get(params, "id")
+
+    filtered_workingtimes =
+      case {Map.get(params, "start"), Map.get(params, "end")} do
+        {nil, nil} ->
+          Works.list_workingtimes_by_team(id)
+
+        {start, nil} ->
+          Works.list_workingtimes_by_team_start(id, start)
+
+        {nil, endV} ->
+          Works.list_workingtimes_by_team_end(id, endV)
+
+        {start, endV} ->
+          Works.list_workingtimes_by_team_start_end(id, start, endV)
+
+        _ ->
+          Works.list_workingtimes_by_team(id)
+      end
+
+    render(conn, :index, workingtimes: filtered_workingtimes)
+  end
 end

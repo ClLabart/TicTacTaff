@@ -9,7 +9,7 @@ defmodule TimeManager.Accounts.Users do
     field :role, :string
     field :firstname, :string
     field :lastname, :string
-    belongs_to :team, TimeManager.Teams.Team
+    belongs_to :team, TimeManager.Teams.Team, foreign_key: :team_id, on_replace: :nilify
 
     timestamps(type: :utc_datetime)
   end
@@ -23,7 +23,7 @@ defmodule TimeManager.Accounts.Users do
     |> unique_constraint(:email)
     # |> foreign_key_constraint(:team_id, name: :user_team_fkey)
     # |> put_password_hash()
-    # |> cast_assoc(:teams)
+    # |> cast_assoc(:team)
   end
 
   # defp put_password_hash(%Ecto.changeset{valid?: true, changes: %{hash_password: hash_password}} = changeset) do

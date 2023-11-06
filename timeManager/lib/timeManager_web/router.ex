@@ -39,7 +39,7 @@ defmodule TimeManagerWeb.Router do
 
     resources "/teams", TeamController, except: [:new, :edit]
 
-    # get "/teams/alltimes/:id", TeamController, :alltimes
+    get "/teams/alltimes/:id", TeamController, :alltimes
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

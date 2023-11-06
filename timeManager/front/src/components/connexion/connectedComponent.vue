@@ -8,13 +8,13 @@
         />
         <main class="col-span-3" :class="[component.type !== '' ? active : '']">
             <!-- <div> -->
+            <Stats v-if="component.type === 'dashboard'" :user="currentUser" />
             <UserComponent v-if="component.type === 'userComponent'" />
             <!-- </div> -->
             <!-- <div> -->
-            <WorkingTime v-if="component.type === 'workingTime'" />
+            <WorkingTimes v-if="component.type === 'workingTimes'" />
             <!-- </div> -->
             <!-- <div> -->
-            <AllUsersWorkingTimes v-if="component.type === 'workingTimes'" />
             <!-- </div> -->
             <!-- <div> -->
             <ChartManager v-if="component.type === 'chartManager'" />
@@ -30,17 +30,18 @@
 import SidebarComponent from "@/components/sidebarComponent.vue";
 //import ChartManager from "@/components/chartManager.vue";
 //import ClockManager from "@/components/clockManager.vue";
+import Stats from "@/components/stats.vue";
 import UserComponent from "@/components/userComponent.vue";
-//import WorkingTime from "@/components/workingTime.vue";
-import AllUsersWorkingTimes from "@/components/allUsersWorkingTimes.vue";
+import WorkingTimes from "@/components/workingTimes.vue";
 import { mapGetters } from "vuex";
 
 export default {
     name: "ConnectedComponent",
     components: {
-        AllUsersWorkingTimes,
+        WorkingTimes,
         SidebarComponent,
         UserComponent,
+        Stats,
     },
 
     data() {
@@ -52,6 +53,7 @@ export default {
 
     computed: {
         ...mapGetters("component", ["getComponent"]),
+        ...mapGetters("user", ["currentUser"]),
         component() {
             return this.getComponent;
         },

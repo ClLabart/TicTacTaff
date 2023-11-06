@@ -7,7 +7,8 @@ const state = {
 
 const getters = {
     isConnected: state => state.connexion,
-    userSelected: state => state.userSelected
+    userSelected: state => state.userSelected,
+    currentUser: state => state.currentUser
 }
 
 const mutations = {
@@ -16,12 +17,18 @@ const mutations = {
     },
     SET_USER_SELECTED(state, user) {
         state.userSelected = user
+    },
+    SET_CURRENT_USER(state, user) {
+        state.currentUser = user
     }
 }
 
 const actions = {
     updateConnection({ commit }, isConnected) {
         commit('SET_CONNECTION', isConnected)
+    },
+    updateCurrentUser({ commit }, user) {
+        commit('SET_CURRENT_USER', user)
     },
     async create ({ commit }, user) {
         try {

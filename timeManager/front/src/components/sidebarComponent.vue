@@ -15,8 +15,8 @@
                 <p class="text-[#405D9F] mb-1 px-4">Menu</p>
                 <ul>
                     <li
-                        :class="[component.type === 'home' ? active : inactive]"
-                        @click="componentType('home')"
+                        :class="[component.type === 'dashboard' ? active : inactive]"
+                        @click="componentType('dashboard')"
                     >
                         <svg
                             class="mr-3"
@@ -143,11 +143,11 @@ export default {
     props: {
         profileImage: String,
         username: String,
-        id: Number,
     },
 
     computed: {
         ...mapGetters("component", ["getComponent"]),
+        ...mapGetters("user", ["currentUser"]),
         component() {
             return this.getComponent;
         },
@@ -170,7 +170,7 @@ export default {
     async setComponent(type, childrenType, show) {
       const payload = { type, show };
       if (childrenType) {
-        await this.getUser(3);
+        await this.getUser(this.currentUser.id);
         payload.childrenType = childrenType;
       }
       this.showComponent(payload);

@@ -36,3 +36,4 @@ npm-debug.log
 /assets/node_modules/
 
 /timeManager/config/dev.local.exs
+/config/dev.local.exs

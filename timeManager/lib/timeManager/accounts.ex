@@ -18,7 +18,7 @@ defmodule TimeManager.Accounts do
 
   """
   def list_users do
-    Repo.all(Users)
+    Repo.all(Users) |> Repo.preload(:team)
   end
 
   @doc """
@@ -35,7 +35,29 @@ defmodule TimeManager.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_users!(id), do: Repo.get!(Users, id)
+  def get_users!(id) do
+    Repo.get!(Users, id)
+    |> Repo.preload(:team)
+  end
+
+  # @doc """
+  # Get a single user Users.any(),
+
+  # Returns `nil` if the Users does not exist.
+
+  # ## Examples
+
+  #     iex> get_users_by_email(test@mail.com)
+  #     %users{}
+
+  #     iex> get_users_by_email(no_account@mail.com)
+  #     nil
+  # """
+  # def get_users_by_email(email) do
+  #   Users
+  #   |> Where(email: ^email)
+  #   |> Repo.one()
+  # end
 
   @doc """
   Creates a users.
@@ -99,6 +121,6 @@ defmodule TimeManager.Accounts do
 
   """
   def change_users(%Users{} = users, attrs \\ %{}) do
-    Users.changeset(users, attrs)
+    Users.changeset(users, attrs) |> Repo.preload(:team)
   end
 end

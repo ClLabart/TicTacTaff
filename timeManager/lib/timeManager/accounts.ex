@@ -35,7 +35,10 @@ defmodule TimeManager.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_users!(id), do: Repo.get!(Users, id) |> Repo.preload(:team)
+  def get_users!(id) do
+    Repo.get!(Users, id)
+    |> Repo.preload(:team)
+  end
 
   # @doc """
   # Get a single user Users.any(),
@@ -118,6 +121,6 @@ defmodule TimeManager.Accounts do
 
   """
   def change_users(%Users{} = users, attrs \\ %{}) do
-    Users.changeset(users, attrs)
+    Users.changeset(users, attrs) |> Repo.preload(:team)
   end
 end

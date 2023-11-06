@@ -1,6 +1,7 @@
 defmodule TimeManagerWeb.UsersController do
   use TimeManagerWeb, :controller
 
+  alias TimeManager.Repo
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users
   action_fallback(TimeManagerWeb.FallbackController)
@@ -31,6 +32,7 @@ defmodule TimeManagerWeb.UsersController do
 
   def create(conn, %{"users" => users_params}) do
     with {:ok, %Users{} = users} <- Accounts.create_users(users_params) do
+      users = Repo.preload(users, :team)
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{users}")

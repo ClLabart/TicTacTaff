@@ -1,6 +1,7 @@
 defmodule TimeManagerWeb.TeamController do
   use TimeManagerWeb, :controller
 
+  alias TimeManager.Repo
   alias TimeManager.Teams
   alias TimeManager.Teams.Team
 
@@ -13,6 +14,7 @@ defmodule TimeManagerWeb.TeamController do
 
   def create(conn, %{"team" => team_params}) do
     with {:ok, %Team{} = team} <- Teams.create_team(team_params) do
+      team = Repo.preload(team, :users)
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/teams/#{team}")
@@ -40,4 +42,31 @@ defmodule TimeManagerWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  # def alltimes(conn, params) do
+  #   id = Map.get(params, "id")
+
+  #   team = Teams.get_team!(id)
+
+  #   filtered_workingtimes =
+  #     case {Map.get(params, "start"), Map.get(params, "end")} do
+  #       {nil, nil} ->
+  #         Works.list_workingtimes_by_user(id)
+
+  #       {start, nil} ->
+  #         Works.list_workingtimes_by_user_start(id, start)
+
+  #       {nil, endV} ->
+  #         Works.list_workingtimes_by_user_end(id, endV)
+
+  #       {start, endV} ->
+  #         Works.list_workingtimes_by_user_start_end(id, start, endV)
+
+  #       _ ->
+  #         Works.list_workingtimes_by_user(id)
+  #     end
+
+  #   render(conn, :index, workingtimes: filtered_workingtimes)
+  #   render(conn, :index, teams: filtered_teams)
+  # end
 end

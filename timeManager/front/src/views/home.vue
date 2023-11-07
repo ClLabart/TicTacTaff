@@ -40,7 +40,8 @@ export default {
   methods: {
         ...mapActions("user", ["updateCurrentUser"]),
         connect(connected) {
-            this.connected = connected;
+          this.updateCurrentUser(JSON.parse(localStorage.getItem('user')));
+          this.connected = connected;
         },
     },
 };

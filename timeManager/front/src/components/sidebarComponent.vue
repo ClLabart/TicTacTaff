@@ -5,8 +5,8 @@
             <img :src="profileImage" alt="Logo de Batman" class="h-12 w-auto" />
             <div>
                 <!-- Nom d'utilisateur -->
-                <p>Bonjour 🤝</p>
-                <p>{{ username }}</p>
+                <p>{{ currentUser.firstname }}</p>
+                <p>{{ currentUser.lastname }}</p>
             </div>
         </section>
 
@@ -55,6 +55,7 @@
                         Pointeuse
                     </li>
                     <li
+                        v-if="currentUser.role === 'supermanager'"
                         :class="[
                             component.type === 'workingTimes'
                                 ? active
@@ -75,7 +76,7 @@
                                 fill="black"
                             />
                         </svg>
-                        Temps
+                        Statistiques
                     </li>
                 </ul>
             </article>

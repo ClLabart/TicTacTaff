@@ -61,20 +61,34 @@ export default {
     // Si le tableau contient des clocks
     if(localStorage.getItem('clocksUser')) {
       
-      this.totalHours = parseInt(localStorage.getItem('clockTotalHours')) 
+      this.totalHours = parseInt(localStorage.getItem('clockTotalHours'))
       this.divs = JSON.parse(localStorage.getItem('clocksUser'));
+
     }
 
+    if(this.userClocks.length > 0) {
+      let lastClock = this.userClocks[this.userClocks.length - 1];
+      let lastClockDay = new Date(lastClock.time).getDate();
 
-    let lastClock = this.userClocks[this.userClocks.length - 1];
-    let lastClockDay = new Date(lastClock.time).getDate();
-
-    if(lastClockDay != actualHourDay) {
-      this.refresh();
-      this.divs = [];
-      localStorage.removeItem('clocksUser');
-      localStorage.setItem('clockTotalHours', '0');
+      if(lastClockDay != actualHourDay) {
+        this.refresh();
+        this.divs = [];
+        localStorage.removeItem('clocksUser');
+        localStorage.setItem('clockTotalHours', '0');
+      }
     }
+    // else {
+    //   if(localStorage.getItem('clocksUser')) {
+
+    //     let clocksUser = JSON.parse(localStorage.getItem('clocksUser'));
+    //     let lastClock = clocksUser[clocksUser.length - 1];
+
+        
+    //   }
+    // }
+    
+
+    
 
 
    
@@ -107,7 +121,14 @@ export default {
         }
         const data = await response.json();
 
-        this.userClocks = data.data;
+        if(data.data.length === 0)
+        {
+          this.userClocks = []
+        }
+        else {
+          this.userClocks = data.data;
+        }
+        
 
       } catch (error) {
         console.error('Error:', error);
@@ -151,7 +172,7 @@ export default {
 
       let formatedHour = this.buildTime(checkTime)
       let clockObject = {id: this.clockID, checkTime: formatedHour, stopTime: '00h00m00s'};
-      this.divs.push(clockObject)
+      this.divs.push(clockObject);
 
       if(localStorage.getItem('clocksUser')) {
 
@@ -172,7 +193,6 @@ export default {
       // Si la session de travail est arrêtée
       if(typeButton === 'pointer')
       {
-        
         if(this.clockOut && this.clockIn === false) {
 
           this.clockIn = true;
@@ -191,8 +211,6 @@ export default {
             await this.postClock(1,this.clockIn, this.actualHour.toISOString())
             this.addDivClock(this.actualHour)
           }
-
-          
           
         }
       }
@@ -214,7 +232,6 @@ export default {
       
           this.countClockInOut++;
           this.countClickStopButton++;
-          
 
           this.totalHours += this.stopHour - this.actualHour
           this.countClickStopButton = 1;

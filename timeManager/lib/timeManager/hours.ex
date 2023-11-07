@@ -5,7 +5,6 @@ defmodule TimeManager.Hours do
 
   import Ecto.Query, warn: false
   require Logger
-  require Timex
 
   alias TimeManager.Repo
 
@@ -25,15 +24,19 @@ defmodule TimeManager.Hours do
   end
 
   def find_user!(id) do
-    # current_datetime = DateTime.now("Etc/UTC")
+    {{year, month, day}, {hour, minute, second}} = :calendar.universal_time()
 
-    # IO.puts(current_datetime)
+    formatted_datetime_startDay =
+      "#{year}-#{String.pad_leading(Integer.to_string(month), 2, "0")}-#{String.pad_leading(Integer.to_string(day), 2, "0")}T00:00:00Z"
+
+    formatted_datetime_endDay =
+      "#{year}-#{String.pad_leading(Integer.to_string(month), 2, "0")}-#{String.pad_leading(Integer.to_string(day), 2, "0")}T23:59:59Z"
 
     query =
       from(c in Clock,
         where:
-          c.user == ^id and c.time >= ^"2023-11-06T00:00:00Z" and
-            c.time <= ^"2023-11-06T23:59:59Z",
+          c.user == ^id and c.time >= ^formatted_datetime_startDay and
+            c.time <= ^formatted_datetime_endDay,
         select: c
       )
 

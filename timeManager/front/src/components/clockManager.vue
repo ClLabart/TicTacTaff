@@ -77,20 +77,7 @@ export default {
         localStorage.setItem('clockTotalHours', '0');
       }
     }
-    // else {
-    //   if(localStorage.getItem('clocksUser')) {
-
-    //     let clocksUser = JSON.parse(localStorage.getItem('clocksUser'));
-    //     let lastClock = clocksUser[clocksUser.length - 1];
-
-        
-    //   }
-    // }
     
-
-    
-
-
    
   },
 

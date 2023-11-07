@@ -1,14 +1,14 @@
 <template>
-  <div>
-    workingTime
-  </div>
+  <div></div>
 </template>
 
 <script>
 export default {
-  name: 'WorkingTime',
-}
+  name: "EditTeam",
+  components: {
 
+  },
+};
 </script>
 
 <style scoped>

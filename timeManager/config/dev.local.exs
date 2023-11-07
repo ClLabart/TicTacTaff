@@ -2,15 +2,10 @@ import Config
 
 # Configure your database
 config :timeManager, TimeManager.Repo,
-  # database: "timemanager_dev",
-  # username: "postgres",
-  # password: "root",
-  # hostname: "localhost",
-  username: System.get_env("PGUSER"),
-  password: System.get_env("PGPASSWORD"),
-  hostname: System.get_env("PGHOST"),
-  database: System.get_env("PGDATABASE"),
-  port: System.get_env("PGPORT"),
+  database: "timemanager_dev",
+  username: "francoislang",
+  password: "root",
+  hostname: "localhost",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -22,17 +17,17 @@ config :timeManager, TimeManager.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :timeManager, TimeManagerWeb.Endpoint,
-  # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {0, 0, 0, 0}, port: 4000],
-  check_origin: false,
-  code_reloader: true,
-  debug_errors: true,
-  secret_key_base: "D1lWhSlAvd99a/46PLrTbVFTZm67irkDvR+TN6HM9l1q2KxTHOkJs2cjsPorMlZY",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
-  ]
+# Binding to loopback ipv4 address prevents access from other machines.
+# Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+http: [ip: {0, 0, 0, 0}, port: 4000],
+check_origin: false,
+code_reloader: true,
+debug_errors: true,
+secret_key_base: "D1lWhSlAvd99a/46PLrTbVFTZm67irkDvR+TN6HM9l1q2KxTHOkJs2cjsPorMlZY",
+watchers: [
+  esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+  tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+]
 
 # ## SSL Support
 #
@@ -59,13 +54,13 @@ config :timeManager, TimeManagerWeb.Endpoint,
 
 # Watch static and templates for browser reloading.
 config :timeManager, TimeManagerWeb.Endpoint,
-  live_reload: [
-    patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/timeManager_web/(controllers|live|components)/.*(ex|heex)$"
-    ]
+live_reload: [
+  patterns: [
+    ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+    ~r"priv/gettext/.*(po)$",
+    ~r"lib/timeManager_web/(controllers|live|components)/.*(ex|heex)$"
   ]
+]
 
 # Enable dev routes for dashboard and mailbox
 config :timeManager, dev_routes: true
@@ -85,6 +80,3 @@ config :phoenix_live_view, :debug_heex_annotations, true
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
-
-# import local config for dev.exs
-import_config "dev.local.exs"

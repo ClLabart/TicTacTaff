@@ -25,6 +25,8 @@
 
 <script>
 
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'ClockManager',
   
@@ -52,7 +54,7 @@ export default {
     let actualHourDay = this.actualHour.getDate();
     
     // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
-    await this.getClocks(1);
+    await this.getClocks(this.currentUser.id);
     
     if(!localStorage.getItem('clockTotalHours')) {
       localStorage.setItem('clockTotalHours','0')
@@ -82,6 +84,7 @@ export default {
   },
 
   computed: {
+    ...mapGetters('user', ['currentUser']),
     displayTotalHours () {
       return this.totalHours
     }
@@ -190,12 +193,12 @@ export default {
 
           if(this.countClockInOut === 2) {
             this.countClockInOut = 1;
-            await this.postClock(1,this.clockIn, this.actualHour.toISOString())
+            await this.postClock(this.currentUser.id ,this.clockIn, this.actualHour.toISOString())
             this.addDivClock(this.actualHour)
           }
           else {
             this.countClockInOut++;
-            await this.postClock(1,this.clockIn, this.actualHour.toISOString())
+            await this.postClock(this.currentUser.id,this.clockIn, this.actualHour.toISOString())
             this.addDivClock(this.actualHour)
           }
           
@@ -232,7 +235,7 @@ export default {
           }    
           
           // Push le clock en BDD
-          await this.postClock(1, false, this.stopHour.toISOString())
+          await this.postClock(this.currentUser.id, false, this.stopHour.toISOString())
         }
 
       }

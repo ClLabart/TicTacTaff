@@ -28,6 +28,7 @@ const actions = {
                 },
                 body: JSON.stringify(team)
             })
+            console.log(commit('SET_TEAM_SELECTED', team))
         } catch (error) {
             console.log(error)
         }

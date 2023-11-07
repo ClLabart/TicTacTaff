@@ -1,7 +1,5 @@
 <template>
-  <div>
-    bonjour je suis edit team
-  </div>
+  <div></div>
 </template>
 
 <script>

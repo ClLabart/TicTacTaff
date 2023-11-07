@@ -61,4 +61,16 @@ defmodule TimeManagerWeb.UsersController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def change_team(conn, %{"id" => id, "teamId" => teamId}) do
+    users = Accounts.get_users!(id)
+    # users = Repo.preload(users, :team)
+    with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
+      users = Repo.preload(users, :team)
+      conn
+      |> put_resp_header("location", ~p"/api/users/#{users}")
+      # |> Repo.preload(users, :team)
+      |> render(:show, users: users)
+    end
+  end
 end

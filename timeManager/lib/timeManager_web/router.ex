@@ -25,6 +25,8 @@ defmodule TimeManagerWeb.Router do
     pipe_through :api
 
     resources "/users", UsersController, except: [:new, :edit]
+    # Changer l'équipe d'un joueur
+    put "/users/:id/team/:teamId", UsersController, :change_team
 
     resources "/workingtimes", WorkingTimeController, except: [:index, :show, :new, :edit]
     # Récupérer tous les wt d'une équipe

@@ -18,7 +18,7 @@ defmodule TimeManager.Accounts.Users do
   def changeset(users, attrs) do
     users
     |> cast(attrs, [:username, :email, :password, :role, :firstname, :lastname])
-    |> cast_assoc(:team)
+    # |> cast_assoc(:team)
     |> validate_required([:username, :email, :password, :role, :firstname, :lastname])
     |> validate_format(:email, ~r/^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,4}$/)
     |> unique_constraint(:email)

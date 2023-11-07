@@ -12,7 +12,7 @@ config :timeManager, TimeManager.Repo,
   database: System.get_env("PGDATABASE"),
   port: System.get_env("PGPORT"),
   stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
+  show_sensitive_data_on_connection_error: false,
   pool_size: 10
 
 # For development, we disable any cache and enable
@@ -27,7 +27,7 @@ config :timeManager, TimeManagerWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "D1lWhSlAvd99a/46PLrTbVFTZm67irkDvR+TN6HM9l1q2KxTHOkJs2cjsPorMlZY",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},

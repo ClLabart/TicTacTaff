@@ -1,6 +1,7 @@
 defmodule TimeManagerWeb.UsersController do
   use TimeManagerWeb, :controller
 
+  alias TimeManager.Repo
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users
   action_fallback(TimeManagerWeb.FallbackController)
@@ -31,6 +32,7 @@ defmodule TimeManagerWeb.UsersController do
 
   def create(conn, %{"users" => users_params}) do
     with {:ok, %Users{} = users} <- Accounts.create_users(users_params) do
+      users = Repo.preload(users, :team)
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{users}")
@@ -45,6 +47,7 @@ defmodule TimeManagerWeb.UsersController do
 
   def update(conn, %{"id" => id, "users" => users_params}) do
     users = Accounts.get_users!(id)
+    users = Repo.preload(users, :team)
 
     with {:ok, %Users{} = users} <- Accounts.update_users(users, users_params) do
       render(conn, :show, users: users)
@@ -56,6 +59,18 @@ defmodule TimeManagerWeb.UsersController do
 
     with {:ok, %Users{}} <- Accounts.delete_users(users) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  def change_team(conn, %{"id" => id, "teamId" => teamId}) do
+    users = Accounts.get_users!(id)
+    # users = Repo.preload(users, :team)
+    with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
+      users = Repo.preload(users, :team)
+      conn
+      |> put_resp_header("location", ~p"/api/users/#{users}")
+      # |> Repo.preload(users, :team)
+      |> render(:show, users: users)
     end
   end
 end

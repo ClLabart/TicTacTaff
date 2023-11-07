@@ -17,10 +17,10 @@
             <!-- <div> -->
             <!-- </div> -->
             <!-- <div> -->
-            <ChartManager v-if="component.type === 'chartManager'" />
+            <TeamComponent v-if="component.type === 'teamComponent'" />
             <!-- </div> -->
             <!-- <div> -->
-            <ClockManager v-if="component.type === 'clockManager'" />
+            <ClockManager v-if="component.type === 'clock'" />
             <!-- </div> -->
         </main>
     </div>
@@ -29,19 +29,22 @@
 <script>
 import SidebarComponent from "@/components/sidebarComponent.vue";
 //import ChartManager from "@/components/chartManager.vue";
-//import ClockManager from "@/components/clockManager.vue";
+import ClockManager from "@/components/clockManager.vue";
 import Stats from "@/components/stats.vue";
 import UserComponent from "@/components/userComponent.vue";
 import WorkingTimes from "@/components/workingTimes.vue";
 import { mapGetters } from "vuex";
+import TeamComponent from "@/components/team.vue";
 
 export default {
     name: "ConnectedComponent",
     components: {
-        WorkingTimes,
-        SidebarComponent,
-        UserComponent,
-        Stats,
+      TeamComponent,
+      WorkingTimes,
+      SidebarComponent,
+      UserComponent,
+      Stats,
+      ClockManager,
     },
 
     data() {
@@ -58,6 +61,7 @@ export default {
             return this.getComponent;
         },
     },
+
 };
 </script>
 

@@ -238,7 +238,7 @@
           />
         </div>
       </div>
-      <div v-if="userConnected.role === 'manager'|| 'supermanager'">
+      <div>
         <select
             v-model="roleSelected"
         >
@@ -274,7 +274,7 @@ export default {
       email: "",
       password: "",
       verifyPassword: "",
-      roles: ["user", "manager"],
+      roles: ["user", "manager", "supermanager"],
       roleSelected: "",
     };
   },

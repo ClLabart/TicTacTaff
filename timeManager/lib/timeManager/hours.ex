@@ -4,6 +4,8 @@ defmodule TimeManager.Hours do
   """
 
   import Ecto.Query, warn: false
+  require Logger
+
   alias TimeManager.Repo
 
   alias TimeManager.Hours.Clock
@@ -22,23 +24,29 @@ defmodule TimeManager.Hours do
   end
 
   def find_user!(id) do
-    query = from(c in Clock, where: c.user == ^id)
+    {{year, month, day}, {hour, minute, second}} = :calendar.universal_time()
+
+    formatted_datetime_startDay =
+      "#{year}-#{String.pad_leading(Integer.to_string(month), 2, "0")}-#{String.pad_leading(Integer.to_string(day), 2, "0")}T00:00:00Z"
+
+    formatted_datetime_endDay =
+      "#{year}-#{String.pad_leading(Integer.to_string(month), 2, "0")}-#{String.pad_leading(Integer.to_string(day), 2, "0")}T23:59:59Z"
+
+    query =
+      from(c in Clock,
+        where:
+          c.user == ^id and c.time >= ^formatted_datetime_startDay and
+            c.time <= ^formatted_datetime_endDay,
+        select: c
+      )
+
     Repo.all(query)
   end
 
-  @doc """
-  Returns the list of clocks by a user.
-
-  ## Examples
-
-      iex> list_clocks()
-      [%Clock{}, ...]
-
-  """
-  def get_clock_by_user!(id) do
-    query = from c in Clock, where: c.user == ^id
-    Repo.all(query)
-  end
+  # def get_clock_by_user!(id) do
+  #   query = from(c in Clock, where: c.user == ^id)
+  #   Repo.all(query)
+  # end
 
   @doc """
   Gets a single clock.

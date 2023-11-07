@@ -29,6 +29,7 @@ const actions = {
     },
     updateCurrentUser({ commit }, user) {
         commit('SET_CURRENT_USER', user)
+        commit('SET_USER_SELECTED', user)
     },
     async create ({ commit }, user) {
         try {

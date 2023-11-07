@@ -3,8 +3,8 @@ import Config
 # Configure your database
 config :timeManager, TimeManager.Repo,
   database: "timemanager_dev",
-  username: "francoislang",
-  password: "root",
+  username: "postgres",
+  password: "22c531dad9c2",
   hostname: "localhost",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
@@ -17,17 +17,17 @@ config :timeManager, TimeManager.Repo,
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
 config :timeManager, TimeManagerWeb.Endpoint,
-# Binding to loopback ipv4 address prevents access from other machines.
-# Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-http: [ip: {0, 0, 0, 0}, port: 4000],
-check_origin: false,
-code_reloader: true,
-debug_errors: true,
-secret_key_base: "D1lWhSlAvd99a/46PLrTbVFTZm67irkDvR+TN6HM9l1q2KxTHOkJs2cjsPorMlZY",
-watchers: [
-  esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
-  tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
-]
+  # Binding to loopback ipv4 address prevents access from other machines.
+  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  http: [ip: {0, 0, 0, 0}, port: 4000],
+  check_origin: false,
+  code_reloader: true,
+  debug_errors: true,
+  secret_key_base: "D1lWhSlAvd99a/46PLrTbVFTZm67irkDvR+TN6HM9l1q2KxTHOkJs2cjsPorMlZY",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -54,13 +54,13 @@ watchers: [
 
 # Watch static and templates for browser reloading.
 config :timeManager, TimeManagerWeb.Endpoint,
-live_reload: [
-  patterns: [
-    ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
-    ~r"priv/gettext/.*(po)$",
-    ~r"lib/timeManager_web/(controllers|live|components)/.*(ex|heex)$"
+  live_reload: [
+    patterns: [
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/timeManager_web/(controllers|live|components)/.*(ex|heex)$"
+    ]
   ]
-]
 
 # Enable dev routes for dashboard and mailbox
 config :timeManager, dev_routes: true

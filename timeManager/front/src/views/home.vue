@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full">
+    <div :class="{ 'centerContent': !isConnected, 'h-full': isConnected }">
         <LoginComponent v-if="!isConnected" @connected="connect" />
         <ConnectedComponent v-if="isConnected" />
     </div>
@@ -46,4 +46,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.centerContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+</style>

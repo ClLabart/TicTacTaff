@@ -46,7 +46,7 @@
 
       <div class="flex gap-10 mt-5">
         <button
-            @click="createTeam"
+            @click="create"
             class="bg-[#001F3F] text-white flex-1 rounded p-1"
         >
           Créer

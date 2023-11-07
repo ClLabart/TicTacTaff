@@ -19,6 +19,7 @@ const mutations = {
 
 const actions = {
     async createTeam ({ commit }, team) {
+        console.log(team)
         try {
             const url = 'http://localhost:4000/api/teams'
             await fetch(url, {

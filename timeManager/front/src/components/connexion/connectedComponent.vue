@@ -1,12 +1,12 @@
 <template>
-    <div class="grid grid-cols-4 h-full">
+    <div class="flex flex-col-reverse md:grid md:grid-cols-4 h-full">
         <!-- Utilisez le composant Sidebar ici -->
         <SidebarComponent
             :profileImage="require('@/assets/imgs/Logo_Batman.png')"
             :username="username"
-            class="col-span-1 h-full"
+            class="h-auto md:col-span-1"
         />
-        <main class="col-span-3" :class="[component.type !== '' ? active : '']">
+        <main class="md:col-span-3" :class="[component.type !== '' ? active : '']">
             <!-- <div> -->
             <Stats v-if="component.type === 'dashboard'" :user="currentUser" />
             <UserComponent v-if="component.type === 'userComponent'" />
@@ -50,7 +50,7 @@ export default {
     data() {
         return {
             username: "Batman",
-            active: "h-[calc(100%-2rem)] rounded-xl m-4 bg-[#f5f5f5]",
+            active: "h-[calc(100%-2rem)] rounded-xl m-4 bg-[#f5f5f5] overflow-auto p-2",
         };
     },
 

@@ -7,21 +7,11 @@
             class="h-auto md:col-span-1"
         />
         <main class="md:col-span-3" :class="[component.type !== '' ? active : '']">
-            <!-- <div> -->
             <Stats v-if="component.type === 'dashboard'" :user="currentUser" />
             <UserComponent v-if="component.type === 'userComponent'" />
-            <!-- </div> -->
-            <!-- <div> -->
             <WorkingTimes v-if="component.type === 'workingTimes'" />
-            <!-- </div> -->
-            <!-- <div> -->
-            <!-- </div> -->
-            <!-- <div> -->
             <TeamComponent v-if="component.type === 'teamComponent'" />
-            <!-- </div> -->
-            <!-- <div> -->
             <ClockManager v-if="component.type === 'clock'" />
-            <!-- </div> -->
         </main>
     </div>
 </template>

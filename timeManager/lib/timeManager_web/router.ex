@@ -25,10 +25,17 @@ defmodule TimeManagerWeb.Router do
     pipe_through :api
 
     resources "/users", UsersController, except: [:new, :edit]
+    # Changer l'équipe d'un joueur
+    put "/users/:id/team/:teamId", UsersController, :change_team
 
     resources "/workingtimes", WorkingTimeController, except: [:index, :show, :new, :edit]
+    # Récupérer tous les wt d'une équipe
+    get "/workingtimes/teams/:id", WorkingTimeController, :alltimes
+    # Récupérer tous les wt d'un user
     get "/workingtimes/:userId", WorkingTimeController, :show_by_user
+    # Récupérer un wt d'un user
     get "/workingtimes/:userId/:id" , WorkingTimeController, :show_by_user_id
+    # Créer un wt en fonction d'un user
     post "/workingtimes/:userId", WorkingTimeController, :create_by_user
 
     resources "/clocks", ClockController, except: [:new, :edit]
@@ -38,8 +45,6 @@ defmodule TimeManagerWeb.Router do
     post "/clocks/:id", ClockController, :create
 
     resources "/teams", TeamController, except: [:new, :edit]
-
-    get "/teams/alltimes/:id", TeamController, :alltimes
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

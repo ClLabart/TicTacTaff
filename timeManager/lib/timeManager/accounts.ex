@@ -123,4 +123,23 @@ defmodule TimeManager.Accounts do
   def change_users(%Users{} = users, attrs \\ %{}) do
     Users.changeset(users, attrs) |> Repo.preload(:team)
   end
+
+  @doc """
+  Updates a users's team.
+
+  ## Examples
+
+      iex> change_team(users, %{field: new_value})
+      {:ok, %Users{}}
+
+      iex> change_team(users, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def change_team(%Users{} = users, teamId) do
+    users
+    |> Users.changeset(%{})
+    |> Ecto.Changeset.put_change(:team_id, String.to_integer(teamId))
+    |> Repo.update()
+  end
 end

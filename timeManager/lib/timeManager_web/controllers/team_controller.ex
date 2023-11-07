@@ -29,6 +29,7 @@ defmodule TimeManagerWeb.TeamController do
 
   def update(conn, %{"id" => id, "team" => team_params}) do
     team = Teams.get_team!(id)
+    team = Repo.preload(team, :users)
 
     with {:ok, %Team{} = team} <- Teams.update_team(team, team_params) do
       render(conn, :show, team: team)
@@ -42,31 +43,4 @@ defmodule TimeManagerWeb.TeamController do
       send_resp(conn, :no_content, "")
     end
   end
-
-  # def alltimes(conn, params) do
-  #   id = Map.get(params, "id")
-
-  #   team = Teams.get_team!(id)
-
-  #   filtered_workingtimes =
-  #     case {Map.get(params, "start"), Map.get(params, "end")} do
-  #       {nil, nil} ->
-  #         Works.list_workingtimes_by_user(id)
-
-  #       {start, nil} ->
-  #         Works.list_workingtimes_by_user_start(id, start)
-
-  #       {nil, endV} ->
-  #         Works.list_workingtimes_by_user_end(id, endV)
-
-  #       {start, endV} ->
-  #         Works.list_workingtimes_by_user_start_end(id, start, endV)
-
-  #       _ ->
-  #         Works.list_workingtimes_by_user(id)
-  #     end
-
-  #   render(conn, :index, workingtimes: filtered_workingtimes)
-  #   render(conn, :index, teams: filtered_teams)
-  # end
 end

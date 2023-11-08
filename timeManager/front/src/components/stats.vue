@@ -13,10 +13,11 @@
         v-if="dataLoaded"
         class="grid grid-cols-1 gap-4"
     >
-      <div class="flex-1 p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedYear"
             @change="getWorkingYearTimes()"
+            class="block py-2.5 px-0 w-40 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
         >
           <option v-for="(year, indexYear) in generateYears" :key="indexYear">
             {{ year }}
@@ -28,29 +29,31 @@
         <div v-if="error">
           une erreur est survenue : {{ error }}
         </div>
-        <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
+        <bar-chart v-if="!loading && !error" :chart="chartDataForYear" class="mt-2 w-full" />
       </div>
-      <div class="flex-1 p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedMonth"
             @change="getWorkingMonthTimes()"
+            class="block py-2.5 px-0 w-40 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
         >
           <option v-for="(month, indexMonth) in monthNames" :key="indexMonth">
             {{ month }}
           </option>
         </select>
-        <bar-chart :chart="chartDataForMonth"  />
+        <bar-chart :chart="chartDataForMonth" class="mt-2 w-full" />
       </div>
-      <div class="flex-1 p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedWeek"
             @change="getWorkingWeekTimes()"
+            class="block py-2.5 px-0 w-40 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
         >
           <option v-for="(week, indexWeek) in allWeeks" :key="indexWeek">
             {{ week }}
           </option>
         </select>
-        <bar-chart :chart="chartDataForWeek"  />
+        <bar-chart :chart="chartDataForWeek" class="mt-2 w-full" />
       </div>
     </div>
   </div>

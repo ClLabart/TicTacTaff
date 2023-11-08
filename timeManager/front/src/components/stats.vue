@@ -13,7 +13,7 @@
         v-if="dataLoaded"
         class="grid grid-cols-1 gap-4"
     >
-      <div class="flex flex-col items-center p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedYear"
             @change="getWorkingYearTimes()"
@@ -31,7 +31,7 @@
         </div>
         <bar-chart v-if="!loading && !error" :chart="chartDataForYear" class="mt-2 w-full" />
       </div>
-      <div class="flex flex-col items-center p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedMonth"
             @change="getWorkingMonthTimes()"
@@ -43,7 +43,7 @@
         </select>
         <bar-chart :chart="chartDataForMonth" class="mt-2 w-full" />
       </div>
-      <div class="flex flex-col items-center p-2">
+      <div class="flex flex-col items-center pt-0 pb-1 p-2">
         <select
             v-model="selectedWeek"
             @change="getWorkingWeekTimes()"

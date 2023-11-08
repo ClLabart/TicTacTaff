@@ -1,6 +1,6 @@
 <template>
     <nav
-        class="md:h-[calc(100%-2rem)] md:rounded-xl bg-[#f5f5f5] md:m-4 md:mr-0 py-2 md:px-4 md:py-6"
+        class="overflow-x-auto md:h-[calc(100%-2rem)] md:rounded-xl bg-[#f5f5f5] md:m-4 md:mr-0 py-2 md:px-4 md:py-6"
     >
         <section class="hidden md:flex flex-row gap-5 justify-center">
             <!-- Logo du site web -->

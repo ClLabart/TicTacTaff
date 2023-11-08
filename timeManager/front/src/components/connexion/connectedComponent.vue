@@ -40,7 +40,7 @@ export default {
     data() {
         return {
             username: "Batman",
-            active: "h-[calc(100%-2rem)] rounded-xl m-4 bg-[#f5f5f5] overflow-auto p-2",
+            active: "test h-[calc(100%-2rem)] rounded-xl m-4 bg-[#f5f5f5] overflow-auto p-2",
         };
     },
 
@@ -55,4 +55,5 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+</style>

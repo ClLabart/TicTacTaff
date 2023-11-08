@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col-reverse md:inline-flex md:flex-row bg-white md:p-5 md:pl-0 md:rounded-3xl md:max-w-5xl opacity-0 transform md:translate-y-4 transition-all duration-500" ref="formContainer">
+    <div class="h-full md:h-auto flex flex-col-reverse md:inline-flex md:flex-row bg-white md:p-5 md:pl-0 md:rounded-3xl md:max-w-5xl opacity-0 transform md:translate-y-4 transition-all duration-500" ref="formContainer">
         <div class="md:w-1/12 flex items-end">
             <svg
                 width="69"
@@ -17,7 +17,7 @@
             </svg>
         </div>
         <div class="md:w-5/12 px-4 md:px-10 md:py-20 justify-center">
-            <div class="mb-5">
+            <div class="mb-5 text-center md:text-left">
                 <h1 class="titleFont text-7xl text-center md:text-left">Bienvenue</h1>
                 <h5 class="text-gray-400 ml-5 text-xs">
                     Connectez-vous pour accéder à votre espace personnel
@@ -90,11 +90,11 @@
                 </div>
             </form>
         </div>
-        <div class=" w-4/5 self-center md:self-auto md:w-6/12 relative">
+        <div class="max-w-4/5 max-h-80 md:max-w-none md:max-h-none self-center md:self-auto md:w-6/12 relative">
             <img
                 src="../../assets/imgs/Batman_Hand_Gun.jpg"
                 alt="Batman tenant un pistolet"
-                class="w-full h-full object-cover md:rounded-2xl"
+                class="w-full h-full object-cover rounded-2xl"
             />
         </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ 'centerContent': !isConnected, 'h-full': isConnected }">
+    <div :class="{ 'centerContent': !isConnected }" class="h-full">
         <LoginComponent v-if="!isConnected" @connected="connect" />
         <ConnectedComponent v-if="isConnected" />
     </div>
@@ -33,14 +33,17 @@ export default {
         this.connected = false;
       } else {
         this.updateCurrentUser(JSON.parse(localStorage.getItem('user')));
+        this.showComponent({"type": "dashboard"});
         this.connected = true;
       }
     },
 
   methods: {
         ...mapActions("user", ["updateCurrentUser"]),
+        ...mapActions("component", ["showComponent"]),
         connect(connected) {
           this.updateCurrentUser(JSON.parse(localStorage.getItem('user')));
+          this.showComponent({"type": "dashboard"});
           this.connected = connected;
         },
     },
@@ -48,10 +51,12 @@ export default {
 </script>
 
 <style>
-.centerContent {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+@media (min-width: 768px) {
+    .centerContent {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
 }
 </style>

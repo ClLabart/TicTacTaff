@@ -72,7 +72,7 @@ defmodule TimeManagerWeb.UsersController do
           |> put_resp_header("location", ~p"/api/users/#{users}")
           |> render(:show, users: users)
         end
-        _ ->
+      _ ->
         with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
           users = Repo.preload(users, :team)
           conn

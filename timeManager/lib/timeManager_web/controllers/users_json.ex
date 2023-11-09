@@ -5,7 +5,9 @@ defmodule TimeManagerWeb.UsersJSON do
   Renders a list of users.
   """
   def index(%{users: users}) do
-    %{data: for(users <- users, do: data(users))}
+    %{
+      data: for(users <- users, do: data(users))
+      }
   end
 
   @doc """
@@ -13,6 +15,16 @@ defmodule TimeManagerWeb.UsersJSON do
   """
   def show(%{users: users}) do
     %{data: data(users)}
+  end
+
+  @doc """
+  Renders a single users with it's token.
+  """
+  def token(%{users: users, token: token}) do
+    %{
+      data: for(users <- users, do: data(users)),
+      token: token
+     }
   end
 
   defp data(%Users{} = users) do
@@ -23,22 +35,18 @@ defmodule TimeManagerWeb.UsersJSON do
       role: users.role,
       firstname: users.firstname,
       lastname: users.lastname,
-      team: if is_nil(users.team) do
-            %{
-              id: nil,
-              name: nil
-            }
-          else
-            %{
-              id: users.team.id,
-              name: users.team.name
-            }
-          end
-      # team: if is_nil(users.team) do
-      #       nil
-      #     else
-      #       users.team
-      #     end
+      team:
+        if is_nil(users.team) do
+          %{
+            id: nil,
+            name: nil
+          }
+        else
+          %{
+            id: users.team.id,
+            name: users.team.name
+          }
+        end
     }
   end
 end

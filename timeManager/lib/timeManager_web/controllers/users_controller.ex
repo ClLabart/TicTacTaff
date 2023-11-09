@@ -1,4 +1,7 @@
 defmodule TimeManagerWeb.UsersController do
+  import JOSE.JWT
+  import JOSE.JWK
+  import JOSE.JWS
   use TimeManagerWeb, :controller
 
   alias TimeManager.Repo
@@ -7,32 +10,64 @@ defmodule TimeManagerWeb.UsersController do
   action_fallback(TimeManagerWeb.FallbackController)
 
   def index(conn, params) do
+    require Logger
+    Logger.info("Debut du debug")
     users = Accounts.list_users()
 
     filtered_users =
-      case {Map.get(params, "username"), Map.get(params, "email")} do
+      case {Map.get(params, "email"), Map.get(params, "password")} do
         {nil, nil} ->
           users
-
-        {username, nil} ->
-          Enum.filter(users, fn user -> user.username == username end)
 
         {nil, email} ->
           Enum.filter(users, fn user -> user.email == email end)
 
-        {username, email} ->
-          Enum.filter(users, fn user -> user.username == username && user.email == email end)
+        {password, nil} ->
+          Enum.filter(users, fn user -> user.password == password end)
+
+        {email, password} ->
+          Enum.filter(users, fn user -> user.email == email && user.password == password end)
 
         _ ->
           users
       end
 
-    render(conn, :index, users: filtered_users)
+    # Exemple de génération d'un JWT avec Joken
+    claims = %{
+      # ID de l'utilisateur
+      "usrUniqueId" => 1,
+      # Team ID de l'utilisateur
+      "teamUniqueId" => 1,
+      # 30 minutes
+      "exp" => DateTime.to_unix(DateTime.add(DateTime.utc_now(), 1800, :second))
+    }
+
+    secret_key = "FrançoisetFredoSontDesCons:)"
+
+    header = %{"alg" => "HS256", "typ" => "JWT"}
+
+    encoded_header = :base64.encode(Jason.encode!(header))
+    encoded_claims = :base64.encode(Jason.encode!(claims))
+
+    data_to_sign = "#{encoded_header}.#{encoded_claims}"
+    signature = hmac_sha256(secret_key, data_to_sign) |> :base64.encode()
+
+    token = "#{encoded_header}.#{encoded_claims}.#{signature}"
+
+    Logger.info(token)
+    render(conn, :token, users: filtered_users, token: token)
+  end
+
+  defp hmac_sha256(key, message) do
+    key_binary = <<key::binary>>
+    message_binary = <<message::binary>>
+    :crypto.hash(:sha256, key_binary <> message_binary)
   end
 
   def create(conn, %{"users" => users_params}) do
     with {:ok, %Users{} = users} <- Accounts.create_users(users_params) do
       users = Repo.preload(users, :team)
+
       conn
       |> put_status(:created)
       |> put_resp_header("location", ~p"/api/users/#{users}")
@@ -67,6 +102,7 @@ defmodule TimeManagerWeb.UsersController do
     # users = Repo.preload(users, :team)
     with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
       users = Repo.preload(users, :team)
+
       conn
       |> put_resp_header("location", ~p"/api/users/#{users}")
       # |> Repo.preload(users, :team)

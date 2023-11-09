@@ -129,12 +129,13 @@ export default {
 
     methods: {
         async connexion() {
+            let password = btoa(btoa(this.password));
             const url =
                 "http://localhost:4000/api/users?" +
-                "username=" +
-                this.password +
-                "&email=" +
-                this.email;
+                "email=" +
+                this.email +
+                "&password=" +
+                password;
             const user = await fetch(url).then((res) => res.json());
 
             if (user.data.length > 0) {

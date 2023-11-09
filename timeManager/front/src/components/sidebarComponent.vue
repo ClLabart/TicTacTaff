@@ -122,7 +122,7 @@
                         </svg>
                         Profil
                     </li>
-                    <li :class="[inactive]">
+                    <li :class="[inactive]" @click="userDeconnection()">
                         <svg
                             class="mr-3"
                             xmlns="http://www.w3.org/2000/svg"
@@ -145,6 +145,7 @@
 </template>
 
 <script>
+// import router from "@/routes";
 import { mapGetters, mapActions } from "vuex";
 export default {
     name: "SidebarComponent",
@@ -190,7 +191,17 @@ export default {
         payload.childrenType = childrenType;
       }
       this.showComponent(payload);
-    }
+    },
+
+    async removeUserLocalStorage(){
+        localStorage.removeItem("user");
+    },
+
+    async userDeconnection(){
+        await this.removeUserLocalStorage();
+        location.reload();
+    },
+    
   }
 };
 </script>

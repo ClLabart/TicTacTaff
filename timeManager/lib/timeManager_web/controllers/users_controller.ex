@@ -42,7 +42,7 @@ defmodule TimeManagerWeb.UsersController do
       "exp" => DateTime.to_unix(DateTime.add(DateTime.utc_now(), 1800, :second))
     }
 
-    secret_key = "FrançoisetFredoSontDesCons:)"
+    secret_key = "z9%P25y6Jr22ZeZ):D97m$Hz]!a5[K4x5ik(43z?-TJe*wTK@E"
 
     header = %{"alg" => "HS256", "typ" => "JWT"}
 

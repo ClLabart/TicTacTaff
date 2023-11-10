@@ -43,7 +43,8 @@ export default {
       clockID: 1,
       userClocks: [],
       divs: [],
-
+      start: null,
+      stop: null
     }
   },
 
@@ -101,6 +102,20 @@ export default {
       const response = await fetch("http://localhost:4000/api/clocks/" + userId, requestOptions);
       const data = await response.json();
       console.log(data)
+      if(status === true) {
+        this.start = time
+      }
+      else {
+        this.stop = time
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "working_time": {start: this.start, end: this.stop, type: "worked"}  })
+        };
+        await fetch("http://localhost:4000/api/workingtimes/" + userId, requestOptions);
+        this.start = null
+        this.stop = null
+      }
     },
 
     async getClocks(userId) {
@@ -233,7 +248,7 @@ export default {
             localStorage.setItem('clockTotalHours', clockTotalHours);
 
           }    
-          
+
           // Push le clock en BDD
           await this.postClock(this.currentUser.id, false, this.stopHour.toISOString())
         }

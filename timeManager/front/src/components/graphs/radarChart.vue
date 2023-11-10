@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <canvas ref="chartCanvas" class=""></canvas>
+    <canvas ref="chartCanvas" class="bg-white"></canvas>
   </div>
 </template>
 
@@ -11,50 +11,57 @@ import {mapGetters} from "vuex";
 Chart.register(...registerables);
 
 export default {
-  name: 'PieChart',
-
-  data() {
-    return {
-      myChart: null
-    }
-  },
+  name: 'RadarChart',
 
   computed: {
-    ...mapGetters("team", ["getTeam", "getAverageTime", "getTotalHoursTeam", "getMembersWithAverageTime"]),
+    ...mapGetters("team", ["getTeam", "getAverageTime", "getMembersWithAverageTime"]),
     labels () {
-      return this.getMembersWithAverageTime.map(member => member.firstname + ' ' + member.lastname)
+      return this.getMembersWithAverageTime.map(member => 'Temps moyen de : ' + member.firstname + ' ' + member.lastname)
     },
-    totalUserTime () {
-      return this.getMembersWithAverageTime.map(member => member.allTime)
+    userAverageTime () {
+      return this.getMembersWithAverageTime.map(member => member.comparaisonTime)
     },
-    totalTimeTeam () {
-      return this.getTotalHoursTeam
+    averageTime () {
+      return this.getAverageTime
     },
   },
 
-  mounted () {
-    this.initializeChart()
+  mounted() {
+    this.initializeChart();
     console.log(['temps total de l\'équipe', ...this.labels])
-    console.log([this.totalTimeTeam, ...this.totalUserTime])
-    console.log([this.randomColor(this.getTeam.name + this.getTeam.id.toString()), ...this.randomColorsForUser()])
+    console.log([this.getAverageTime, ...this.userAverageTime])
   },
 
   methods: {
     initializeChart () {
       new Chart(this.$refs.chartCanvas.getContext('2d'), {
-        type: 'pie',
+        type: 'radar',
         data: {
-          labels: this.labels,
+          label: ['Temps moyen', ],
           datasets: [{
-            data: this.totalUserTime,
-            backgroundColor: this.randomColorsForUser(),
+            label: ['Temps moyen', ...this.labels],
+            data: [100, ...this.userAverageTime],
+            backgroundColor: this.randomColor(this.getTeam.name + this.getTeam.id.toString()),
             borderWidth: 1,
             borderColor: '#777',
             hoverBorderWidth: 3,
             hoverBorderColor: '#000',
-          }]
+          }
+          ]
         },
-      })
+        options: {
+          scales: {
+            r: {
+              angleLines: {
+                display: false
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      }
+      )
     },
     randomColorsForUser () {
       let colorUser = []
@@ -77,7 +84,7 @@ export default {
       return color
     }
   }
-};
+}
 
 </script>
 

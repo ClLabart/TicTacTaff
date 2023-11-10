@@ -51,11 +51,19 @@
     </Vue-good-table>
   </div>
 
-  <div v-if="showStatsUser" class="p-6">
-    <Stats
-        :user="users.data.find(user => user.id === this.idUserSelected)"
-        @hide='hide'
-    />
+  <div v-if="showStatsUser" class="grid grid-cols-1 gap-4">
+    <div>
+      <Stats
+          :user="users.data.find(user => user.id === this.idUserSelected)"
+          :monthHide="true"
+          :yearHide="true"
+          @hide='hide'
+      />
+    </div>
+    <div>
+      <StatsUserTeam />
+    </div>
+
   </div>
 
   <div >
@@ -73,12 +81,14 @@ import 'vue-good-table-next/dist/vue-good-table-next.css'
 import { VueGoodTable } from 'vue-good-table-next';
 import Stats from "@/components/stats.vue";
 import StatsTeam from "@/components/statsTeam.vue";
+import StatsUserTeam from "@/components/statsUserTeam.vue";
 export default {
   name: "EditTeam",
   components: {
     VueGoodTable,
     Stats,
-    StatsTeam
+    StatsTeam,
+    StatsUserTeam
   },
 
   data () {
@@ -104,9 +114,15 @@ export default {
   },
 
   computed: {
-  ...mapGetters("team", ["getTeam"]),
+  ...mapGetters("team", ["getTeam", "getAverageTime", "getMembersWithAverageTime"]),
     teamUser () {
       return this.getTeam;
+    },
+    averageTime () {
+      return this.getAverageTime;
+    },
+    userWithAverageTime () {
+      return this.getMembersWithAverageTime;
     },
     users () {
       const users = this.teamUser.users.map(u => {
@@ -120,9 +136,15 @@ export default {
     }
   },
 
+  async mounted() {
+    await this.allHoursTeam(this.teamUser.id)
+    console.log(this.userWithAverageTime)
+  },
+
   methods: {
-    ...mapActions("team", ["removeMember"]),
-    showStats(id) {
+    ...mapActions("team", ["removeMember", "allHoursTeam"]),
+    async showStats(id) {
+      await this.allHoursTeam(this.teamUser.id)
       this.showMembers = !this.showMembers;
       this.showStatsUser = !this.showStatsUser;
       this.idUserSelected = id;

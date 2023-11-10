@@ -13,7 +13,7 @@
         v-if="dataLoaded"
         class="grid grid-cols-1 gap-4"
     >
-      <div class="flex-1 p-2">
+      <div v-if="!yearHide" class="flex-1 p-2">
         <select
             v-model="selectedYear"
             @change="getWorkingYearTimes()"
@@ -30,7 +30,7 @@
         </div>
         <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
       </div>
-      <div class="flex-1 p-2">
+      <div v-if="!monthHide" class="flex-1 p-2">
         <select
             v-model="selectedMonth"
             @change="getWorkingMonthTimes()"
@@ -91,6 +91,14 @@ export default {
       type: Object,
       required: true
     },
+    monthHide: {
+      type: Boolean,
+      default: false
+    },
+    yearHide: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed : {

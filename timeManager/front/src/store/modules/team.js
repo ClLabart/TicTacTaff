@@ -1,11 +1,21 @@
+import moment from "moment";
+
 const state = {
     team: null,
-    teams: []
+    teams: [],
+    allHours: [],
+    membersWithAverageTime: [],
+    averageTime: null,
+    totalHoursTeam: null
 }
 
 const getters = {
     getTeam: state => state.team,
-    getTeams: state => state.teams
+    getTeams: state => state.teams,
+    getAllHours: state => state.allHours,
+    getMembersWithAverageTime: state => state.membersWithAverageTime,
+    getAverageTime: state => state.averageTime,
+    getTotalHoursTeam: state => state.totalHoursTeam
 }
 
 const mutations = {
@@ -17,6 +27,18 @@ const mutations = {
     },
     SET_MEMBER (state, members) {
         state.team.users = members
+    },
+    SET_HOURS (state, hours) {
+        state.allHours = hours
+    },
+    SET_MEMBERS_WITH_AVERAGE_TIME (state, members) {
+        state.membersWithAverageTime = members
+    },
+    SET_AVERAGETIME (state, averageTime) {
+        state.averageTime = averageTime
+    },
+    SET_TOTAL_HOURS_TEAM (state, totalHoursTeam) {
+        state.totalHoursTeam = totalHoursTeam
     }
 }
 
@@ -109,6 +131,47 @@ const actions = {
         } catch (error) {
             console.log(error)
         }
+    },
+    async allHoursTeam ({dispatch, commit, getters}, id, start, end) {
+        try {
+            const url = (start && end) ? `http://localhost:4000/api/workingtimes/teams/${id}?start=${start}&end=${end}` : `http://localhost:4000/api/workingtimes/teams/${id}`
+            const response = await fetch(url)
+            const hours = await response.json()
+            commit('SET_HOURS', hours.data)
+            let userWithTimeCalculated = []
+            const userFilteredByType = hours.data.filter(user => user.type === 'worked')
+            for (const user of userFilteredByType) {
+                user.time = await dispatch('averageTime', user.start, user.end)
+                userWithTimeCalculated.push(user)
+            }
+            let userWithAllTime = []
+            for(const user of getters.getTeam.users) {
+                const deepCopyUser = JSON.parse(JSON.stringify(userWithTimeCalculated))
+                let allTime = 0
+                const userWithTime = deepCopyUser.filter(userTime => userTime.user === user.id)
+                for(const time of userWithTime) {
+                    allTime += time.time
+                }
+                user.allTime = allTime
+                userWithAllTime.push(user)
+            }
+            commit('SET_TOTAL_HOURS_TEAM', userWithAllTime.reduce((acc, user) => acc + user.allTime, 0))
+            const averageTimeTeam = userWithAllTime.reduce((acc, user) => acc + user.allTime, 0) / getters.getTeam.users.length
+            for (const user of userWithAllTime) {
+                user.comparaisonTime = (user.allTime / averageTimeTeam)*100
+            }
+            commit('SET_MEMBERS_WITH_AVERAGE_TIME', userWithAllTime)
+            commit('SET_AVERAGETIME', averageTimeTeam)
+
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    averageTime ({commit}, start, end) {
+        const startTimestamp = moment(start).unix()
+        const endTimestamp = moment(end).unix()
+        console.log(commit('SET_AVERAGETIME', endTimestamp - startTimestamp))
+        return endTimestamp - startTimestamp
     }
 }
 

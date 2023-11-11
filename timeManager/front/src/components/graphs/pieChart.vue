@@ -7,11 +7,19 @@
 <script>
 import { Chart, registerables } from 'chart.js';
 import {mapGetters} from "vuex";
+import moment from "moment";
 
 Chart.register(...registerables);
 
 export default {
   name: 'PieChart',
+
+  props: {
+    id: {
+      type: Number,
+      required: true
+    }
+  },
 
   data() {
     return {
@@ -20,49 +28,60 @@ export default {
   },
 
   computed: {
-    ...mapGetters("team", ["getTeam", "getAverageTime", "getTotalHoursTeam", "getMembersWithAverageTime"]),
+    ...mapGetters("team", ["getTeam", "getAverageTime", "getMembersWithAverageTime"]),
     labels () {
       return this.getMembersWithAverageTime.map(member => member.firstname + ' ' + member.lastname)
     },
     totalUserTime () {
       return this.getMembersWithAverageTime.map(member => member.allTime)
     },
-    totalTimeTeam () {
-      return this.getTotalHoursTeam
-    },
   },
 
   mounted () {
     this.initializeChart()
-    console.log(['temps total de l\'équipe', ...this.labels])
-    console.log([this.totalTimeTeam, ...this.totalUserTime])
-    console.log([this.randomColor(this.getTeam.name + this.getTeam.id.toString()), ...this.randomColorsForUser()])
   },
 
   methods: {
-    initializeChart () {
-      new Chart(this.$refs.chartCanvas.getContext('2d'), {
+    initializeChart() {
+      const self = this;
+      this.myChart = new Chart(this.$refs.chartCanvas.getContext('2d'), {
         type: 'pie',
         data: {
-          labels: this.labels,
+          labels: self.labels,
           datasets: [{
-            data: this.totalUserTime,
-            backgroundColor: this.randomColorsForUser(),
-            borderWidth: 1,
-            borderColor: '#777',
+            data: self.totalUserTime,
+            backgroundColor: self.randomColorsForUser().map(color => color.backgroundColor),
+            borderWidth: self.randomColorsForUser().map(color => color.borderWidth),
+            borderColor: self.randomColorsForUser().map(color => color.borderColor),
             hoverBorderWidth: 3,
             hoverBorderColor: '#000',
           }]
         },
-      })
-    },
-    randomColorsForUser () {
-      let colorUser = []
-      for (const user of this.getMembersWithAverageTime) {
-        user.color = this.randomColor(user.firstname + user.id.toString() + user.lastname )
-        colorUser.push(user.color)
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return moment.utc(context.raw * 1000).format('HH:mm:ss');
+              }
+            }
+          }
+        }
       }
-      return colorUser
+      })
+
+    },
+    randomColorsForUser() {
+      let colors = [];
+      for (const user of this.getMembersWithAverageTime) {
+        let color = this.randomColor(user.firstname + user.id.toString() + user.lastname);
+        colors.push({
+          backgroundColor: color,
+          borderColor: '#777',
+          borderWidth: 1
+        });
+      }
+      return colors;
     },
     randomColor (string) {
       let colorHash = 0;

@@ -52,6 +52,9 @@
   </div>
 
   <div v-if="showStatsUser" class="grid grid-cols-1 gap-4">
+    <div class="flex justify-center">
+      Statistique de {{users.data.find(user => user.id === this.idUserSelected).firstname}} {{users.data.find(user => user.id === this.idUserSelected).lastname}}
+    </div>
     <div>
       <Stats
           :user="users.data.find(user => user.id === this.idUserSelected)"
@@ -61,7 +64,7 @@
       />
     </div>
     <div>
-      <StatsUserTeam />
+      <StatsUserTeam :id="idUserSelected"/>
     </div>
 
   </div>

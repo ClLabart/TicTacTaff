@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <canvas ref="chartCanvas" class="bg-white"></canvas>
+    <canvas ref="chartCanvas" class=""></canvas>
   </div>
 </template>
 
@@ -13,23 +13,28 @@ Chart.register(...registerables);
 export default {
   name: 'RadarChart',
 
+  props: {
+    id: {
+      type: Number,
+      required: true
+    }
+  },
+
   computed: {
-    ...mapGetters("team", ["getTeam", "getAverageTime", "getMembersWithAverageTime"]),
-    labels () {
-      return this.getMembersWithAverageTime.map(member => 'Temps moyen de : ' + member.firstname + ' ' + member.lastname)
+    ...mapGetters("team", ["getTeam", "getAverageTime", "getTotalHoursTeam", "getMembersWithAverageTime"]),
+    userName () {
+      return this.getMembersWithAverageTime.find(member => member.id === this.id)
     },
     userAverageTime () {
-      return this.getMembersWithAverageTime.map(member => member.comparaisonTime)
+      return this.getMembersWithAverageTime.find(member => member.id === this.id).comparaisonTime
     },
-    averageTime () {
-      return this.getAverageTime
+    averageTimeNormalized () {
+      return this.getAverageTime / this.getTotalHoursTeam * 100
     },
   },
 
   mounted() {
     this.initializeChart();
-    console.log(['temps total de l\'équipe', ...this.labels])
-    console.log([this.getAverageTime, ...this.userAverageTime])
   },
 
   methods: {
@@ -37,17 +42,19 @@ export default {
       new Chart(this.$refs.chartCanvas.getContext('2d'), {
         type: 'radar',
         data: {
-          label: ['Temps moyen', ],
+          labels: [
+            'Temps total de l\'équipe',
+            'Temps moyen d\'un employé',
+            'Temps de ' + this.userName.firstname + ' ' + this.userName.lastname
+          ],
           datasets: [{
-            label: ['Temps moyen', ...this.labels],
-            data: [100, ...this.userAverageTime],
-            backgroundColor: this.randomColor(this.getTeam.name + this.getTeam.id.toString()),
+            label: 'Données en %',
+            data: [100, this.averageTimeNormalized, this.userAverageTime],
             borderWidth: 1,
             borderColor: '#777',
             hoverBorderWidth: 3,
             hoverBorderColor: '#000',
-          }
-          ]
+          }]
         },
         options: {
           scales: {
@@ -60,8 +67,7 @@ export default {
             }
           }
         }
-      }
-      )
+      });
     },
     randomColorsForUser () {
       let colorUser = []

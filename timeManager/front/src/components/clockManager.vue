@@ -49,37 +49,81 @@ export default {
 
   async mounted() {
 
-    // Récupération de la date actuelle
-    this.actualHour = new Date();
-    let actualHourDay = this.actualHour.getDate();
     
-    // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
-    await this.getClocks(this.currentUser.id);
+    
     
     if(!localStorage.getItem('clockTotalHours')) {
       localStorage.setItem('clockTotalHours','0')
     }
 
-    // Si le tableau contient des clocks
+    // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
+    this.userClocks = await this.getClocks(this.currentUser.id);
+
+
+    // Cas 1 : Premier pointage de l'utilisateur sur l'application
+    // Cas 2 : L'utilisateur à déjà effectué des pointages sur l'application (localStorage : 'ClocksUser' existe)
+    //         Il faut donc vérifier si c'est une nouvelle journée pour savoir si on reset ou si on affiche les clocks présentes dans le localStorage
+    //         ( Le format d'un clock reçu de la base de données est : {id: ... , status: ... , 'time': ...} )
+    //         ( Le format d'affichage lors de la création des divs est : {id: ... , checkTime: ... , stopTime: ...} )
+    //         Ne pas oublier de mettre les clocks reçus au même format d'affichage pour ne pas avoir des formats différents dans le clocksUser
+
+
+
     if(localStorage.getItem('clocksUser')) {
-      
-      this.totalHours = parseInt(localStorage.getItem('clockTotalHours'))
-      this.divs = JSON.parse(localStorage.getItem('clocksUser'));
+      let clocks = JSON.parse(localStorage.getItem('clocksUser'))
 
-    }
+      let lastClockEmployee = clocks[clocks.length - 1].stopTime;
+      const match = lastClockEmployee.match(/(\d+)h:(\d+)m:(\d+)s/);
 
-    if(this.userClocks.length > 0) {
-      let lastClock = this.userClocks[this.userClocks.length - 1];
-      let lastClockDay = new Date(lastClock.time).getDate();
+      const [, heure, minute, seconde] = match.map(Number);
 
-      if(lastClockDay != actualHourDay) {
+      // Création de l'objet Date
+      const lastClockEmployeeDay = new Date();
+      lastClockEmployeeDay.setHours(heure);
+      lastClockEmployeeDay.setMinutes(minute);
+      lastClockEmployeeDay.setSeconds(seconde);
+      lastClockEmployeeDay.getDate();
+
+      this.actualHour = new Date();
+      let actualHourDay = this.actualHour.getDate();
+
+      if(lastClockEmployeeDay != actualHourDay) {
         this.refresh();
         this.divs = [];
-        localStorage.removeItem('clocksUser');
-        localStorage.setItem('clockTotalHours', '0');
+        localStorage.removeItem('clocksUser')
+        localStorage.setItem('clockTotalHours', '0')
       }
+      else {
+        this.divs = clocks;
+      }
+
     }
-    
+    else {
+      if(this.userClocks.length > 0) {
+        this.userClocks.forEach((clock, index) => {
+          if(clock.status === true) {
+            let clockTime = new Date(clock.time)
+            let formatedHour = this.buildTime(clockTime)
+            let clockObject = {id: index, checkTime: formatedHour, stopTime: '00h00m00s'};
+            this.divs.push(clockObject)
+          }
+
+          if(clock.status === false) {
+            let clockTime = new Date(clock.time)
+            this.divs[this.divs.length - 1].stopTime = this.buildTime(clockTime);
+
+          }
+        });
+
+        localStorage.setItem('clocksUser', this.divs)
+        // Calculer clockTotalHours et l'ajouter au localStorage
+      }
+      else {
+        this.refresh()
+        localStorage.setItem('clockTotalHours', '0')
+        
+      }
+    }   
    
   },
 
@@ -111,13 +155,9 @@ export default {
         }
         const data = await response.json();
 
-        if(data.data.length === 0)
-        {
-          this.userClocks = []
-        }
-        else {
-          this.userClocks = data.data;
-        }
+        console.log(data.data)
+
+        return data.data;
         
 
       } catch (error) {
@@ -154,13 +194,13 @@ export default {
     },
 
     // La fonction addDivClock() permet d'ajouter des données pour une nouvelle div d'affichage
-    addDivClock(checkTime) {
+    addDivClock(time) {
       if(this.clockID != 1)
       {
         this.clockID++;
       }
 
-      let formatedHour = this.buildTime(checkTime)
+      let formatedHour = this.buildTime(time)
       let clockObject = {id: this.clockID, checkTime: formatedHour, stopTime: '00h00m00s'};
       this.divs.push(clockObject);
 

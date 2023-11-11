@@ -37,6 +37,16 @@ export default {
     },
   },
 
+  watch: {
+    'getMembersWithAverageTime': {
+      handler: function () {
+       this.myChart.destroy();
+        this.initializeChart();
+      },
+      deep: true
+    }
+  },
+
   mounted () {
     this.initializeChart()
   },
@@ -62,7 +72,7 @@ export default {
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  return moment.utc(context.raw * 1000).format('HH:mm:ss');
+                  return moment(new Date(context.raw)).format('HH:mm:ss');
               }
             }
           }

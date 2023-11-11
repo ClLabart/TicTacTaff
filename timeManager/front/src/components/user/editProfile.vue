@@ -311,7 +311,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.getUser)
       this.username = this.getUser.data.username;
       this.email = this.getUser.data.email;
       this.id = this.getUser.data.id;

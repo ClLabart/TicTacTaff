@@ -132,9 +132,9 @@ const actions = {
             console.log(error)
         }
     },
-    async allHoursTeam ({dispatch, commit, getters}, id, start, end) {
+    async allHoursTeam ({dispatch, commit, getters}, payload) {
         try {
-            const url = (start && end) ? `http://localhost:4000/api/workingtimes/teams/${id}?start=${start}&end=${end}` : `http://localhost:4000/api/workingtimes/teams/${id}`
+            const url = (payload.start && payload.end) ? `http://localhost:4000/api/workingtimes/teams/${encodeURIComponent(payload.id)}?start=${encodeURIComponent(payload.start)}&end=${encodeURIComponent(payload.end)}` : `http://localhost:4000/api/workingtimes/teams/${encodeURIComponent(payload.id)}`
             const response = await fetch(url)
             const hours = await response.json()
             commit('SET_HOURS', hours.data)
@@ -157,6 +157,7 @@ const actions = {
             }
             commit('SET_TOTAL_HOURS_TEAM', userWithAllTime.reduce((acc, user) => acc + user.allTime, 0))
             const averageTimeTeam = userWithAllTime.reduce((acc, user) => acc + user.allTime, 0) / getters.getTeam.users.length
+            console.log(averageTimeTeam)
             for (const user of userWithAllTime) {
                 user.comparaisonTime = (user.allTime / averageTimeTeam)*100
             }

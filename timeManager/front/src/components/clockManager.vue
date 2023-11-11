@@ -99,9 +99,8 @@ export default {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ "clock": {status: status, time: time}  })
       };
-      const response = await fetch("http://localhost:4000/api/clocks/" + userId, requestOptions);
-      const data = await response.json();
-      console.log(data)
+      await fetch("http://localhost:4000/api/clocks/" + userId, requestOptions);
+      //const data = await response.json();
       if(status === true) {
         this.start = time
       }

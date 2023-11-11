@@ -2,11 +2,6 @@
   <header class="mb-6">
     <h2 class="text-center">Equipe {{teamUser.name}}</h2>
   </header>
-  <div>
-    <button @click="showStats()" class="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded">
-      Voir les statistiques de l'équipe
-    </button>
-  </div>
   <div v-if="showMembers">
     <Vue-good-table
         class="w-full"
@@ -55,25 +50,12 @@
     <div class="flex justify-center">
       Statistique de {{users.data.find(user => user.id === this.idUserSelected).firstname}} {{users.data.find(user => user.id === this.idUserSelected).lastname}}
     </div>
-    <div>
-      <Stats
-          :user="users.data.find(user => user.id === this.idUserSelected)"
-          :monthHide="true"
-          :yearHide="true"
-          @hide='hide'
-      />
+    <div class="flex justify-center">
+      <input type="date" id="calendar" v-model="selectedDateStart">
     </div>
     <div>
-      <StatsUserTeam :id="idUserSelected"/>
+      <StatsUserTeam :selectedDateStart="selectedDateStart" :id="idUserSelected"/>
     </div>
-
-  </div>
-
-  <div >
-    <StatsTeam
-        :team="teamUser"
-        @hide='hide'
-    />
   </div>
 
 </template>
@@ -82,15 +64,12 @@
 import { mapGetters, mapActions } from "vuex";
 import 'vue-good-table-next/dist/vue-good-table-next.css'
 import { VueGoodTable } from 'vue-good-table-next';
-import Stats from "@/components/stats.vue";
-import StatsTeam from "@/components/statsTeam.vue";
 import StatsUserTeam from "@/components/statsUserTeam.vue";
+import moment from "moment";
 export default {
   name: "EditTeam",
   components: {
     VueGoodTable,
-    Stats,
-    StatsTeam,
     StatsUserTeam
   },
 
@@ -113,6 +92,7 @@ export default {
       showMembers: true,
       showStatsUser: false,
       idUserSelected: null,
+      selectedDateStart: moment().format("YYYY-MM-DD"),
     }
   },
 
@@ -120,12 +100,6 @@ export default {
   ...mapGetters("team", ["getTeam", "getAverageTime", "getMembersWithAverageTime"]),
     teamUser () {
       return this.getTeam;
-    },
-    averageTime () {
-      return this.getAverageTime;
-    },
-    userWithAverageTime () {
-      return this.getMembersWithAverageTime;
     },
     users () {
       const users = this.teamUser.users.map(u => {
@@ -139,15 +113,10 @@ export default {
     }
   },
 
-  async mounted() {
-    await this.allHoursTeam(this.teamUser.id)
-    console.log(this.userWithAverageTime)
-  },
-
   methods: {
     ...mapActions("team", ["removeMember", "allHoursTeam"]),
     async showStats(id) {
-      await this.allHoursTeam(this.teamUser.id)
+      await this.allHoursTeam({id : this.getTeam.id});
       this.showMembers = !this.showMembers;
       this.showStatsUser = !this.showStatsUser;
       this.idUserSelected = id;

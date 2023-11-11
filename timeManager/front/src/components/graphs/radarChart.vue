@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <canvas ref="chartCanvas" class=""></canvas>
+    <canvas v-if="loaded" ref="chartCanvas" class=""></canvas>
   </div>
 </template>
 
@@ -12,6 +12,13 @@ Chart.register(...registerables);
 
 export default {
   name: 'RadarChart',
+
+  data() {
+    return {
+      myChart: null,
+      loaded: true
+    }
+  },
 
   props: {
     id: {
@@ -26,11 +33,26 @@ export default {
       return this.getMembersWithAverageTime.find(member => member.id === this.id)
     },
     userAverageTime () {
-      return this.getMembersWithAverageTime.find(member => member.id === this.id).comparaisonTime
+      return this.getMembersWithAverageTime.find(member => member.id === this.id).allTime / this.getTotalHoursTeam * 100
     },
     averageTimeNormalized () {
       return this.getAverageTime / this.getTotalHoursTeam * 100
     },
+  },
+
+  watch: {
+    'getMembersWithAverageTime': {
+      handler: function (newVal) {
+        if(newVal) {
+          this.myChart.destroy();
+          this.initializeChart();
+          this.loaded = true;
+        } else {
+          this.loaded = false;
+        }
+      },
+      deep: true
+    }
   },
 
   mounted() {
@@ -39,7 +61,7 @@ export default {
 
   methods: {
     initializeChart () {
-      new Chart(this.$refs.chartCanvas.getContext('2d'), {
+      this.myChart = new Chart(this.$refs.chartCanvas.getContext('2d'), {
         type: 'radar',
         data: {
           labels: [

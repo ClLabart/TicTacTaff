@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div v-if="!statTeam" class="relative">
     <div v-if="user.id !== currentUser.id">
       <button
           type="submit"
@@ -13,10 +13,11 @@
         v-if="dataLoaded"
         class="grid grid-cols-1 gap-4"
     >
-      <div v-if="!yearHide" class="flex-1 p-2">
+      <div class="flex-1 p-2">
         <select
             v-model="selectedYear"
             @change="getWorkingYearTimes()"
+            class="flex justify-center"
         >
           <option v-for="(year, indexYear) in generateYears" :key="indexYear">
             {{ year }}
@@ -30,10 +31,11 @@
         </div>
         <bar-chart v-if="!loading && !error" :chart="chartDataForYear"  />
       </div>
-      <div v-if="!monthHide" class="flex-1 p-2">
+      <div class="flex-1 p-2">
         <select
             v-model="selectedMonth"
             @change="getWorkingMonthTimes()"
+            class="flex justify-center"
         >
           <option v-for="(month, indexMonth) in monthNames" :key="indexMonth">
             {{ month }}
@@ -45,6 +47,7 @@
         <select
             v-model="selectedWeek"
             @change="getWorkingWeekTimes()"
+            class="flex justify-center"
         >
           <option v-for="(week, indexWeek) in allWeeks" :key="indexWeek">
             {{ week }}
@@ -55,13 +58,19 @@
     </div>
   </div>
 
+  <div v-else class="relative">
+    <div v-if="dataLoaded" class="flex justify-center">
+      <bar-chart :chart="chartDataForDay"  />
+    </div>
+  </div>
+
 </template>
 
 <script>
 import BarChart from "@/components/graphs/barChart.vue";
 import moment from 'moment'
 import 'moment/locale/fr'
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'StatsComponent',
@@ -77,12 +86,13 @@ export default {
       yearsHours: 0,
       monthsHours: 0,
       weeksHours: 0,
+      hoursDay: 0,
       allHoursOfMonth: [],
       allHoursOfWeek: [],
       allHoursOfDay: [],
       loading: false,
       error: null,
-      selectedWeek: moment().week()
+      selectedWeek: moment().week(),
     }
   },
 
@@ -91,13 +101,13 @@ export default {
       type: Object,
       required: true
     },
-    monthHide: {
+    statTeam: {
       type: Boolean,
       default: false
     },
-    yearHide: {
-      type: Boolean,
-      default: false
+    selectedDateStart: {
+      type: String,
+      default: moment().format('YYYY-MM-DD')
     }
   },
 
@@ -162,6 +172,9 @@ export default {
     chartDataForWeek() {
       return this.chart('Heures travaillées durant la semaine ' + this.selectedWeek + ' : ' + this.weeksHours + 'h', this.getWeekDaysByWeekNumber.map(day => day.label), this.allHoursOfDay)
     },
+    chartDataForDay() {
+      return this.chart('Heures travaillées le ' + this.selectedDateStart + ' : ' + this.hoursDay + 'h', [''], [this.hoursDay])
+    },
     component () {
       return this.getComponent;
     },
@@ -180,7 +193,15 @@ export default {
         if(!value) {
           this.hide();
         }
-      }
+      },
+    'selectedDateStart': {
+      handler: async function (value) {
+        console.log(value)
+        await this.handleDateChange(value);
+      },
+      deep: true,
+      immediate: true
+    }
   },
 
   async mounted () {
@@ -303,6 +324,11 @@ export default {
     },
     hide () {
       this.$emit('hide', true);
+    },
+    async handleDateChange(value) {
+      const start = moment(value).startOf('day');
+      const end = moment(value).endOf('day');
+      this.hoursDay = await this.calculateHoursForPeriod(start, end);
     }
   },
 }

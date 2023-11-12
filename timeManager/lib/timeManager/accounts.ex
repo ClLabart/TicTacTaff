@@ -41,6 +41,26 @@ defmodule TimeManager.Accounts do
   end
 
   @doc """
+    get a users by it's id.
+
+  ## Examples
+
+      iex> get_users_by_id(123)
+      %users{}
+
+      iex> get_users_by_id(456)
+      nil
+    """
+  def get_users_by_id(id) do
+    query = from u in Users,
+      where: u.id == ^id,
+      order_by: [desc: u.inserted_at],
+      limit: 1
+    Repo.one(query)
+    |> Repo.preload(:team)
+  end
+
+  @doc """
   Get a single user Users.any(),
 
   Returns `nil` if the Users does not exist.

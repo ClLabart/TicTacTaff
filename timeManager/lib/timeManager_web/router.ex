@@ -15,12 +15,10 @@ defmodule TimeManagerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  # pipeline :authenticated do
+  # pipeline :api_auth do
   #   plug :accepts, ["json"]
-  #   # plug Guardian.Plug.Pipeline, module: TimeManager.Guardian
-  #   # plug Guardian.Plug.VerifySession
 
-  #   # plug Guardian.Plug.VerifyHeader, claims: %{"typ" => "access"}, realm: "Bearer"
+  #   plug TimeManagerWeb.Plugs.AuthenticateUser
   # end
 
   scope "/", TimeManagerWeb do
@@ -31,14 +29,13 @@ defmodule TimeManagerWeb.Router do
 
   # Other scopes may use custom stacks.
   scope "/api", TimeManagerWeb do
+    # pipe_through [:api, :api_auth]
     pipe_through :api
 
     # Connexion
     post "/login", UsersController, :login
 
     post "/test", UsersController, :test
-
-    pipe_through :authenticated
     resources "/users", UsersController, except: [:new, :edit]
 
     # Changer l'équipe d'un joueur

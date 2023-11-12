@@ -74,10 +74,29 @@ defmodule TimeManagerWeb.UsersController do
           user = Accounts.get_users!(Map.get(claims, "sub"))
           render(conn, :show, users: user)
         {:error, :token_expired} ->
-          Logger.info("Token expired")
+          Logger.error("Token expired")
       end
     else
       Logger.error("Authorization header is missing or invalid")
+    end
+  end
+
+  def testplus(conn, _params) do
+    Logger.info("entered")
+    user = conn.assigns.current_user
+
+    Logger.info("debug")
+    Logger.info(user)
+
+    if user do
+      # Check user roles or permissions here
+      # You may want to replace the render with your authorization logic
+      render(conn, :show, users: user)
+    else
+      # Unauthorized or handle as needed
+      conn
+      |> put_status(:unauthorized)
+      |> render(:error, error: "Unauthorized")
     end
   end
 

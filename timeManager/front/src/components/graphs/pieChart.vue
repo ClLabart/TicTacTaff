@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js';
+import {Chart, registerables} from 'chart.js';
 import {mapGetters} from "vuex";
 import moment from "moment";
 
@@ -33,14 +33,14 @@ export default {
       return this.getMembersWithAverageTime.map(member => member.firstname + ' ' + member.lastname)
     },
     totalUserTime () {
-      return this.getMembersWithAverageTime.map(member => member.allTime)
+      return this.getMembersWithAverageTime
     },
   },
 
   watch: {
     'getMembersWithAverageTime': {
       handler: function () {
-       this.myChart.destroy();
+        this.myChart.destroy();
         this.initializeChart();
       },
       deep: true
@@ -59,7 +59,7 @@ export default {
         data: {
           labels: self.labels,
           datasets: [{
-            data: self.totalUserTime,
+            data: self.totalUserTime.map(user => user.allTime),
             backgroundColor: self.randomColorsForUser().map(color => color.backgroundColor),
             borderWidth: self.randomColorsForUser().map(color => color.borderWidth),
             borderColor: self.randomColorsForUser().map(color => color.borderColor),
@@ -72,12 +72,21 @@ export default {
             tooltip: {
               callbacks: {
                 label: function(context) {
-                  return moment(new Date(context.raw)).format('HH:mm:ss');
+                  let duration = moment.duration(context.raw, 'seconds');
+                  let hours = duration.hours();
+                  let minutes = duration.minutes();
+                  let seconds = duration.seconds();
+                  return [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    seconds.toString().padStart(2, '0')
+                  ].join(':');
+                }
+
               }
             }
           }
         }
-      }
       })
 
     },

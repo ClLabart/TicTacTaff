@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <canvas v-if="loaded" ref="chartCanvas" class=""></canvas>
+    <canvas ref="chartCanvas" class=""></canvas>
   </div>
 </template>
 
@@ -16,7 +16,6 @@ export default {
   data() {
     return {
       myChart: null,
-      loaded: true
     }
   },
 
@@ -42,14 +41,9 @@ export default {
 
   watch: {
     'getMembersWithAverageTime': {
-      handler: function (newVal) {
-        if(newVal) {
-          this.myChart.destroy();
-          this.initializeChart();
-          this.loaded = true;
-        } else {
-          this.loaded = false;
-        }
+      handler: function () {
+        this.myChart.destroy();
+        this.initializeChart();
       },
       deep: true
     }
@@ -57,7 +51,7 @@ export default {
 
   mounted() {
     this.initializeChart();
-  },
+    },
 
   methods: {
     initializeChart () {

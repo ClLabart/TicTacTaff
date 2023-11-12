@@ -58,9 +58,12 @@
     </div>
   </div>
 
-  <div v-else class="relative">
-    <div v-if="dataLoaded" class="flex justify-center">
-      <bar-chart :chart="chartDataForDay"  />
+  <div v-else class="relative flex justify-around">
+    <div v-if="showDay" class="h-72">
+      <bar-chart :chart="chartDataForDay" />
+    </div>
+    <div v-if="showWeek" class="h-72">
+      <bar-chart :chart="chartDataForWeek" />
     </div>
   </div>
 
@@ -108,7 +111,19 @@ export default {
     selectedDateStart: {
       type: String,
       default: moment().format('YYYY-MM-DD')
-    }
+    },
+    weekSelected: {
+      type: Number,
+      default: moment().week()
+    },
+    showDay: {
+      type: Boolean,
+      default: false
+    },
+    showWeek: {
+      type: Boolean,
+      default: false
+    },
   },
 
   computed : {
@@ -196,18 +211,28 @@ export default {
       },
     'selectedDateStart': {
       handler: async function (value) {
-        console.log(value)
         await this.handleDateChange(value);
       },
       deep: true,
       immediate: true
+    },
+    'weekSelected': {
+      handler: async function (value) {
+        this.selectedWeek = value;
+        this.selectedMonth = this.monthNames[moment().isoWeek(value).month()];
+        await this.getWorkingWeekTimes();
+      },
+      immediate: true,
+      deep: true,
     }
   },
 
   async mounted () {
-    await this.getWorkingYearTimes()
-    await this.getWorkingMonthTimes()
-    await this.getWorkingWeekTimes()
+    if(!this.statTeam) {
+      await this.getWorkingYearTimes()
+      await this.getWorkingMonthTimes()
+      await this.getWorkingWeekTimes()
+    }
   },
 
   methods: {
@@ -219,7 +244,6 @@ export default {
       end = this.formatDateToSQL(end);
       this.loading = true;
       const url = `http://localhost:4000/api/workingtimes/${this.user.id}?start=${start}&end=${end}`;
-
       try {
         const response = await fetch(url);
         const data = await response.json();

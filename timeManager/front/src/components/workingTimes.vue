@@ -59,6 +59,7 @@
     <Stats
         :user="users.data.find(user => user.id === this.id)"
         @hide='hide'
+        :stat-team="false"
     />
   </div>
 

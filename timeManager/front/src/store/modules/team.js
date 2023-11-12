@@ -141,7 +141,7 @@ const actions = {
             let userWithTimeCalculated = []
             const userFilteredByType = hours.data.filter(user => user.type === 'worked')
             for (const user of userFilteredByType) {
-                user.time = await dispatch('averageTime', user.start, user.end)
+                user.time = await dispatch('averageTime', {start: user.start, end: user.end})
                 userWithTimeCalculated.push(user)
             }
             let userWithAllTime = []
@@ -157,22 +157,20 @@ const actions = {
             }
             commit('SET_TOTAL_HOURS_TEAM', userWithAllTime.reduce((acc, user) => acc + user.allTime, 0))
             const averageTimeTeam = userWithAllTime.reduce((acc, user) => acc + user.allTime, 0) / getters.getTeam.users.length
-            console.log(averageTimeTeam)
             for (const user of userWithAllTime) {
                 user.comparaisonTime = (user.allTime / averageTimeTeam)*100
             }
             commit('SET_MEMBERS_WITH_AVERAGE_TIME', userWithAllTime)
             commit('SET_AVERAGETIME', averageTimeTeam)
-
         } catch (error) {
             console.log(error)
         }
     },
-    averageTime ({commit}, start, end) {
-        const startTimestamp = moment(start).unix()
-        const endTimestamp = moment(end).unix()
-        console.log(commit('SET_AVERAGETIME', endTimestamp - startTimestamp))
-        return endTimestamp - startTimestamp
+    averageTime ({commit}, payload) {
+        const startTimestamp = moment(payload.start).unix()
+        const endTimestamp = moment(payload.end).unix()
+        console.log(commit('SET_HOURS', endTimestamp - startTimestamp))
+        return Math.abs(endTimestamp - startTimestamp)
     }
 }
 

@@ -47,14 +47,24 @@
   </div>
 
   <div v-if="showStatsUser" class="grid grid-cols-1 gap-4">
-    <div class="flex justify-center">
-      Statistique de {{users.data.find(user => user.id === this.idUserSelected).firstname}} {{users.data.find(user => user.id === this.idUserSelected).lastname}}
+    <h2 class="flex justify-center">
+      Statistiques de {{users.data.find(user => user.id === this.idUserSelected).firstname}} {{users.data.find(user => user.id === this.idUserSelected).lastname}}
+    </h2>
+    <div class="flex justify-around">
+      <div class="my-2">
+        <label>Choisir le jour </label>
+        <input type="date" id="calendar" v-model="selectedDateStart">
+      </div>
+      <div>
+        <label>Choisir la semaine </label>
+        <select v-model="weekSelected">
+          <option v-for="week in allWeeks" :key="week" :value="week">{{week}}</option>
+        </select>
+      </div>
     </div>
-    <div class="flex justify-center">
-      <input type="date" id="calendar" v-model="selectedDateStart">
-    </div>
+
     <div>
-      <StatsUserTeam :selectedDateStart="selectedDateStart" :id="idUserSelected"/>
+      <StatsUserTeam :week-selected="weekSelected" :selectedDateStart="selectedDateStart" :id="idUserSelected"/>
     </div>
   </div>
 
@@ -93,6 +103,7 @@ export default {
       showStatsUser: false,
       idUserSelected: null,
       selectedDateStart: moment().format("YYYY-MM-DD"),
+      weekSelected: moment().week()
     }
   },
 
@@ -110,13 +121,19 @@ export default {
         }
       })
       return {data: users}
+    },
+    allWeeks () {
+      const weeks = [];
+      for (let i = 1; i <= 52; i++) {
+        weeks.push(i);
+      }
+      return weeks;
     }
   },
 
   methods: {
-    ...mapActions("team", ["removeMember", "allHoursTeam"]),
+    ...mapActions("team", ["removeMember"]),
     async showStats(id) {
-      await this.allHoursTeam({id : this.getTeam.id});
       this.showMembers = !this.showMembers;
       this.showStatsUser = !this.showStatsUser;
       this.idUserSelected = id;

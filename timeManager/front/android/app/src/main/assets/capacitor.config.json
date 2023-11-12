@@ -1,0 +1,8 @@
+{
+	"appId": "timemanager.app",
+	"appName": "mobile",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "http"
+	}
+}

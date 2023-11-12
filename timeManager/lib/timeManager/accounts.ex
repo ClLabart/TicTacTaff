@@ -40,24 +40,54 @@ defmodule TimeManager.Accounts do
     |> Repo.preload(:team)
   end
 
-  # @doc """
-  # Get a single user Users.any(),
+  @doc """
+  Get a single user Users.any(),
 
-  # Returns `nil` if the Users does not exist.
+  Returns `nil` if the Users does not exist.
 
-  # ## Examples
+  ## Examples
 
-  #     iex> get_users_by_email(test@mail.com)
-  #     %users{}
+      iex> get_users_by_email(test@mail.com)
+      %users{}
 
-  #     iex> get_users_by_email(no_account@mail.com)
-  #     nil
-  # """
-  # def get_users_by_email(email) do
-  #   Users
-  #   |> Where(email: ^email)
-  #   |> Repo.one()
-  # end
+      iex> get_users_by_email(no_account@mail.com)
+      nil
+  """
+  def get_users_by_email(email) do
+    query = from u in Users,
+      where: u.email == ^email,
+      order_by: [desc: u.inserted_at],
+      limit: 1
+    Repo.one(query)
+    |> Repo.preload(:team)
+    # Users
+    # |> Where(email: ^email)
+    # |> Repo.one()
+  end
+
+    @doc """
+  Get a single user, by email and password
+
+  Returns `nil` if the Users does not exist.
+
+  ## Examples
+
+      iex> get_users_by_email_and_password(test@mail.com, hash)
+      %users{}
+
+      iex> get_users_by_email_and_password(no_account@mail.com, hash)
+      nil
+  """
+  def get_users_by_email_and_password(email, hash) do
+    query = from u in Users,
+      where: u.email == ^email and u.password == ^hash
+    Repo.one(query)
+    |> Repo.preload(:team)
+    # Users
+    # |> Where(email: ^email)
+    # |> Where(password: ^hash)
+    # |> Repo.one()
+  end
 
   @doc """
   Creates a users.

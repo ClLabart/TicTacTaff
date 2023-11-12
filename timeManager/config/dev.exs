@@ -11,6 +11,11 @@ config :timeManager, TimeManager.Repo,
   hostname: System.get_env("PGHOST"),
   database: System.get_env("PGDATABASE"),
   port: System.get_env("PGPORT"),
+  # username: "postgres",
+  # password: "root",
+  # hostname: "db",
+  # database: "timemanager_dev",
+  # port: "5432",
   stacktrace: true,
   show_sensitive_data_on_connection_error: false,
   pool_size: 10
@@ -87,4 +92,4 @@ config :phoenix_live_view, :debug_heex_annotations, true
 config :swoosh, :api_client, false
 
 # import local config for dev.exs
-import_config "dev.local.exs"
+# import_config "dev.local.exs"

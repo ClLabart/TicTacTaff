@@ -7,8 +7,8 @@ COPY ./timeManager /app
 
 COPY ./entrypoint.sh /
 
-RUN rm /app/config/dev.local.exs
-
+RUN apk add --no-cache make gcc libc-dev
+# RUN apk --update --no-cache add tzdata
 RUN mix local.hex --force
 RUN mix deps.get
 

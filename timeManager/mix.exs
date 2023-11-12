@@ -36,7 +36,6 @@ defmodule TimeManager.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:calendar, "~> 0.17"},
       {:ecto_sql, "~> 3.10"},
-      {:timex, "~> 3.7"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -55,6 +54,9 @@ defmodule TimeManager.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:cors_plug, "~> 3.0"},
       {:jose, "~> 1.11"},
+      {:comeonin, "~> 5.4"},
+      {:argon2_elixir, "~> 4.0"},
+      {:bcrypt_elixir, "~> 3.1.0"}
     ]
   end
 
@@ -69,7 +71,7 @@ defmodule TimeManager.MixProject do
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      test: ["ecto.create", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]

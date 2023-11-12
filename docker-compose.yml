@@ -3,9 +3,9 @@ services:
         image: postgres:latest
         container_name: postgres
         environment:
-            POSTGRES_DB: timemanager_dev
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: root
+            POSTGRES_DB: timemanager_dev
         ports:
             - "5432:5432"
 
@@ -14,16 +14,17 @@ services:
         build: .
         environment:
             # Variables to connect to our Postgres server.
-            PGDATABASE: timemanager_dev
             PGUSER: postgres
             PGPASSWORD: root
-            PGPORT: 5432
-            # Hostname of our Postgres container.
             PGHOST: db
+            PGDATABASE: timemanager_dev
+            PGPORT: 5432
+        # command: /entrypoint.sh
         # command: mix phx.server
+        command: mix ecto.migrate
         # Remove for production servers
         # volumes:
-        #   - ./timeManager:/app
+        #     - ./timeManager:/app
         ports:
             - "4000:4000"
         depends_on:

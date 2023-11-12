@@ -22,8 +22,6 @@ config :timeManager, TimeManagerWeb.Endpoint,
   pubsub_server: TimeManager.PubSub,
   live_view: [signing_salt: "YR4TOFJZ"]
 
-
-
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

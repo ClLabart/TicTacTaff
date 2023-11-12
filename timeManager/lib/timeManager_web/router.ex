@@ -24,6 +24,9 @@ defmodule TimeManagerWeb.Router do
   scope "/api", TimeManagerWeb do
     pipe_through :api
 
+    # Connexion
+    post "/login", UsersController, :login
+    
     resources "/users", UsersController, except: [:new, :edit]
     # Changer l'équipe d'un joueur
     put "/users/:id/team/:teamId", UsersController, :change_team

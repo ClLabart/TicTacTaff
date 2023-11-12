@@ -10,27 +10,50 @@ defmodule TimeManagerWeb.UsersController do
   action_fallback(TimeManagerWeb.FallbackController)
 
   def index(conn, params) do
-    require Logger
-    Logger.info("Debut du debug")
     users = Accounts.list_users()
 
     filtered_users =
-      case {Map.get(params, "email"), Map.get(params, "password")} do
+      case {Map.get(params, "username"), Map.get(params, "email")} do
         {nil, nil} ->
           users
+
+        {username, nil} ->
+          Enum.filter(users, fn user -> user.username == username end)
 
         {nil, email} ->
           Enum.filter(users, fn user -> user.email == email end)
 
-        {password, nil} ->
-          Enum.filter(users, fn user -> user.password == password end)
-
-        {email, password} ->
-          Enum.filter(users, fn user -> user.email == email && user.password == password end)
+        {username, email} ->
+          Enum.filter(users, fn user -> user.username == username && user.email == email end)
 
         _ ->
           users
       end
+
+    render(conn, :index, users: filtered_users)
+  end
+
+  defp hmac_sha256(key, message) do
+    key_binary = <<key::binary>>
+    message_binary = <<message::binary>>
+    :crypto.hash(:sha256, key_binary <> message_binary)
+  end
+
+  def login(conn, %{"email" => email, "password" => password}) do
+    require Logger
+    Logger.info("Debut du debug")
+    user = Accounts.get_users_by_email(email)
+
+    secret_key = "z9%P25y6Jr22ZeZ):D97m$Hz]!a5[K4x5ik(43z?-TJe*wTK@E"
+    # key_binary = <<secret_key::binary>>
+    hash_password = String.downcase(Base.encode16(hmac_sha256(secret_key, password)))
+
+    case :crypto.hash_equals(hash_password, user.password) do
+      :ok ->
+        render(conn, :show, users: user)
+      :false ->
+        render(conn, :error)
+    end
 
     # Exemple de génération d'un JWT avec Joken
     claims = %{
@@ -42,8 +65,6 @@ defmodule TimeManagerWeb.UsersController do
       "exp" => DateTime.to_unix(DateTime.add(DateTime.utc_now(), 1800, :second))
     }
 
-    secret_key = "z9%P25y6Jr22ZeZ):D97m$Hz]!a5[K4x5ik(43z?-TJe*wTK@E"
-
     header = %{"alg" => "HS256", "typ" => "JWT"}
 
     encoded_header = :base64.encode(Jason.encode!(header))
@@ -54,14 +75,7 @@ defmodule TimeManagerWeb.UsersController do
 
     token = "#{encoded_header}.#{encoded_claims}.#{signature}"
 
-    Logger.info(token)
-    render(conn, :token, users: filtered_users, token: token)
-  end
-
-  defp hmac_sha256(key, message) do
-    key_binary = <<key::binary>>
-    message_binary = <<message::binary>>
-    :crypto.hash(:sha256, key_binary <> message_binary)
+    render(conn, :token, users: user, token: token)
   end
 
   def create(conn, %{"users" => users_params}) do

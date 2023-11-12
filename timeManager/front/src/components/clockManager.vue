@@ -53,17 +53,17 @@ export default {
     // Récupération de la date actuelle
     this.actualHour = new Date();
     let actualHourDay = this.actualHour.getDate();
-    
+
     // Récupération de la liste des clocks d'un utilisateur de la journée actuelle
     await this.getClocks(this.currentUser.id);
-    
+
     if(!localStorage.getItem('clockTotalHours')) {
       localStorage.setItem('clockTotalHours','0')
     }
 
     // Si le tableau contient des clocks
     if(localStorage.getItem('clocksUser')) {
-      
+
       this.totalHours = parseInt(localStorage.getItem('clockTotalHours'))
       this.divs = JSON.parse(localStorage.getItem('clocksUser'));
 
@@ -80,8 +80,8 @@ export default {
         localStorage.setItem('clockTotalHours', '0');
       }
     }
-    
-   
+
+
   },
 
   computed: {
@@ -132,7 +132,7 @@ export default {
         else {
           this.userClocks = data.data;
         }
-        
+
 
       } catch (error) {
         console.error('Error:', error);

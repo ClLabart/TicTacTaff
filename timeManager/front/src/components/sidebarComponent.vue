@@ -1,6 +1,10 @@
 <template>
-    <nav class="sidebar rounded-xl bg-[#f5f5f5] m-4 mr-0 px-4 py-6">
-        <section class="flex flex-row gap-5 justify-center">
+    <nav
+        @touchstart="navbarName('start')"
+        @touchend="navbarName('end')"
+        class="overflow-x-auto overflow-y-hidden md:h-[calc(100%-2rem)] md:rounded-xl bg-[#f5f5f5] md:m-4 md:mr-0 py-2 md:px-4 md:py-6"
+    >
+        <section class="hidden md:flex flex-row gap-5 justify-center">
             <!-- Logo du site web -->
             <img :src="profileImage" alt="Logo de Batman" class="h-12 w-auto" />
             <div>
@@ -10,16 +14,19 @@
             </div>
         </section>
 
-        <section>
-            <article class="mt-5">
-                <p class="text-[#405D9F] mb-1 px-4">Menu</p>
-                <ul>
+        <section class="flex flex-1 w-fit m-auto md:justify-center md:m-0 md:w-full md:block md:gap-3">
+            <article class="md:mt-5 flex md:block">
+                <p class="hidden md:block text-[#405D9F] mb-1 px-4">Menu</p>
+                <ul class="flex md:block sm:gap-3">
                     <li
-                        :class="[component.type === 'dashboard' ? active : inactive]"
+                        :class="[
+                            component.type === 'dashboard' ? active : inactive,
+                        ]"
+                        class="test"
                         @click="componentType('dashboard')"
                     >
                         <svg
-                            class="mr-3"
+                            class="md:mr-3"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -31,7 +38,9 @@
                                 fill="black"
                             />
                         </svg>
-                        Accueil
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Accueil
+                        </p>
                     </li>
                     <li
                         :class="[
@@ -40,7 +49,7 @@
                         @click="componentType('clock')"
                     >
                         <svg
-                            class="mr-3"
+                            class="md:mr-3"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -52,7 +61,9 @@
                                 fill="black"
                             />
                         </svg>
-                        Pointeuse
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Pointeuse
+                        </p>
                     </li>
                     <li
                         v-if="currentUser.role === 'supermanager'"
@@ -64,7 +75,7 @@
                         @click="componentType('workingTimes')"
                     >
                         <svg
-                            class="mr-3"
+                            class="md:mr-3"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -76,29 +87,47 @@
                                 fill="black"
                             />
                         </svg>
-                        Statistiques
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Statistiques
+                        </p>
                     </li>
                 </ul>
             </article>
 
-            <article class="mt-5">
-                <p class="text-[#405D9F] mb-1 px-4">Paramètres</p>
-                <ul>
-                  <li
-                      :class="[
+            <article class="md:mt-5 flex md:block">
+                <p class="hidden md:block text-[#405D9F] mb-1 px-4">
+                    Paramètres
+                </p>
+                <ul class="flex md:block sm:gap-3">
+                    <li
+                        :class="[
                             component.type === 'teamComponent'
                                 ? active
                                 : inactive,
                         ]"
-                      @click="componentType('teamComponent')"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="black" width="24"
-                         height="24" class="mr-3">
-                      <path class="noClose" stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
-                    </svg>
-
-                    Equipe
-                  </li>
+                        @click="componentType('teamComponent')"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="black"
+                            width="24"
+                            height="24"
+                            class="md:mr-3"
+                        >
+                            <path
+                                class="noClose"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+                            />
+                        </svg>
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Equipe
+                        </p>
+                    </li>
                     <li
                         :class="[
                             component.type === 'userComponent'
@@ -108,7 +137,7 @@
                         @click="componentType('userComponent', 'edit')"
                     >
                         <svg
-                            class="mr-3"
+                            class="md:mr-3"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -120,11 +149,13 @@
                                 fill="black"
                             />
                         </svg>
-                        Profil
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Profil
+                        </p>
                     </li>
                     <li :class="[inactive]" @click="userDeconnection()">
                         <svg
-                            class="mr-3"
+                            class="md:mr-3"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -136,7 +167,9 @@
                                 fill="black"
                             />
                         </svg>
-                        Se déconnecter
+                        <p class="md:block" :class="expanded ? 'block navbarNames' : 'hidden'">
+                            Déconnexion
+                        </p>
                     </li>
                 </ul>
             </article>
@@ -152,8 +185,10 @@ export default {
     data() {
         return {
             show: false,
-            active: "activated-link flex items-center py-2.5 px-4 text-[#2990F1] rounded-lg hover:bg-gray-200 group  bg-white shadow-lg shadow-gray-200 hover:!bg-white  transition-all duration-200",
-            inactive: "flex items-center py-2.5 px-4 rounded-lg hover:bg-gray-200 group transition-all duration-200",
+            expanded: false,
+            delay: null,
+            active: "flex flex-col md:flex-row items-center mx-1 sm:mx-4 md:mx-0 py-2.5 px-2 md:px-4 rounded-lg hover:bg-gray-200 group text-xs md:text-base text-[#2990F1] bg-white shadow-lg shadow-gray-200 hover:!bg-white transition-all duration-200 activated-link",
+            inactive: "flex flex-col md:flex-row items-center mx-1 sm:mx-4 md:mx-0 py-2.5 px-2 md:px-4 rounded-lg hover:bg-gray-200 group text-xs md:text-base text-[#444] md:text-[black] transition-all duration-200",
         };
     },
 
@@ -170,15 +205,40 @@ export default {
         },
     },
 
-  methods: {
-    ...mapActions('component', ["showComponent"]),
-    ...mapActions('user', ['getUser']),
-    async componentType(type, childrenType) {
-      if (type === this.component.type) {
-        await this.toggleShow(type, childrenType);
-        return;
-      }
-      await this.setComponent(type, childrenType, true);
+    methods: {
+        ...mapActions("component", ["showComponent"]),
+        ...mapActions("user", ["getUser"]),
+        async componentType(type, childrenType) {
+            if (type === this.component.type) {
+                await this.toggleShow(type, childrenType);
+                return;
+            }
+            await this.setComponent(type, childrenType, true);
+        },
+        async toggleShow(type, childrenType) {
+            this.show = !this.show;
+            await this.setComponent(type, childrenType, this.show);
+        },
+        async setComponent(type, childrenType, show) {
+            const payload = { type, show };
+            if (childrenType) {
+                await this.getUser(this.currentUser.id);
+                payload.childrenType = childrenType;
+            }
+            this.showComponent(payload);
+        },
+        navbarName(state) {
+            this.expanded = false;
+            if (state === "start") {
+                this.delay = setTimeout(() => {
+                    this.expanded = true;
+                }, 500)
+            }
+            if (state === "end") {
+                clearTimeout(this.delay);
+                this.expanded = false;
+            }
+        }
     },
     async toggleShow(type, childrenType) {
       this.show = !this.show;
@@ -212,11 +272,20 @@ export default {
 }
 
 .activated-link svg path.noClose {
-  fill: none;
-  stroke: #2990f1;
+    fill: none;
+    stroke: #2990f1;
 }
 
-.sidebar {
-    height: calc(100% - 2rem);
+.navbarNames {
+    animation: appear 0.5s ease;
+}
+
+@keyframes appear {
+    0% {
+        font-size: 0;
+    }
+    100% {
+        font-size: 0.75rem;
+    }
 }
 </style>

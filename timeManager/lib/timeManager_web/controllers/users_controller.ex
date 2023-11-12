@@ -116,14 +116,21 @@ defmodule TimeManagerWeb.UsersController do
 
   def change_team(conn, %{"id" => id, "teamId" => teamId}) do
     users = Accounts.get_users!(id)
-    # users = Repo.preload(users, :team)
-    with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
-      users = Repo.preload(users, :team)
-
-      conn
-      |> put_resp_header("location", ~p"/api/users/#{users}")
-      # |> Repo.preload(users, :team)
-      |> render(:show, users: users)
+    case teamId do
+      "0" ->
+        with {:ok, %Users{} = users} <- Accounts.remove_team(users) do
+          users = Repo.preload(users, :team)
+          conn
+          |> put_resp_header("location", ~p"/api/users/#{users}")
+          |> render(:show, users: users)
+        end
+      _ ->
+        with {:ok, %Users{} = users} <- Accounts.change_team(users, teamId) do
+          users = Repo.preload(users, :team)
+          conn
+          |> put_resp_header("location", ~p"/api/users/#{users}")
+          |> render(:show, users: users)
+        end
     end
   end
 end

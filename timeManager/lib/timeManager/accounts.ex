@@ -172,4 +172,23 @@ defmodule TimeManager.Accounts do
     |> Ecto.Changeset.put_change(:team_id, String.to_integer(teamId))
     |> Repo.update()
   end
+
+  @doc """
+  Remove a users's team.
+
+  ## Examples
+
+      iex> remove_team(users, %{field: new_value})
+      {:ok, %Users{}}
+
+      iex> remove_team(users, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def remove_team(%Users{} = users) do
+    users
+    |> Users.changeset(%{})
+    |> Ecto.Changeset.put_change(:team_id, nil)
+    |> Repo.update()
+  end
 end

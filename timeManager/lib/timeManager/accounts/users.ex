@@ -23,11 +23,11 @@ defmodule TimeManager.Accounts.Users do
   def changeset(users, attrs) do
     users
     |> cast(attrs, [:username, :email, :password, :role, :firstname, :lastname])
-    # |> cast_assoc(:team)
+    # |> foreign_key_constraint(:team_id, name: :users_team_id_fkey)
+    |> cast_assoc(:team)
     |> validate_required([:username, :email, :password, :role, :firstname, :lastname])
     |> validate_format(:email, ~r/^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{1,4}$/)
     |> unique_constraint(:email)
-    # |> foreign_key_constraint(:team_id, name: :user_team_fkey)
     |> put_password_hash()
   end
 

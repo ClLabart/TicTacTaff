@@ -2,11 +2,14 @@ defmodule TimeManagerWeb.UsersController do
   import JOSE.JWT
   import JOSE.JWK
   import JOSE.JWS
+  import Guardian.Plug
   use TimeManagerWeb, :controller
 
+  import Logger
   alias TimeManager.Repo
   alias TimeManager.Accounts
   alias TimeManager.Accounts.Users
+  alias TimeManager.Guardian
   action_fallback(TimeManagerWeb.FallbackController)
 
   def index(conn, params) do
@@ -33,49 +36,49 @@ defmodule TimeManagerWeb.UsersController do
     render(conn, :index, users: filtered_users)
   end
 
-  defp hmac_sha256(key, message) do
-    key_binary = <<key::binary>>
-    message_binary = <<message::binary>>
-    :crypto.hash(:sha256, key_binary <> message_binary)
+  def login(conn, %{"email" => email, "password" => password}) do
+    case Accounts.get_users_by_email(email) do
+      nil ->
+        conn
+        |> put_status(404)
+        |> render(:error, error: "User not found")
+
+      user ->
+        user = Repo.preload(user, :team)
+
+        case Bcrypt.verify_pass(password, user.password) do
+          true ->
+            {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
+
+            conn
+            |> put_status(200)
+            |> render(:token, users: user, token: jwt)
+          false ->
+            conn
+            |> put_status(401)
+            |> render(:error, error: "Wrong password")
+        end
+    end
   end
 
-  def login(conn, %{"email" => email, "password" => password}) do
-    require Logger
-    Logger.info("Debut du debug")
-    user = Accounts.get_users_by_email(email)
+  def test(conn, _params) do
+    Logger.info("debug")
+    token = get_req_header(conn, "authorization")
 
-    secret_key = "z9%P25y6Jr22ZeZ):D97m$Hz]!a5[K4x5ik(43z?-TJe*wTK@E"
-    # key_binary = <<secret_key::binary>>
-    hash_password = String.downcase(Base.encode16(hmac_sha256(secret_key, password)))
+    if token != nil do
+      token = hd(token) |> String.trim() |> String.replace_prefix("Bearer ", "")
 
-    case :crypto.hash_equals(hash_password, user.password) do
-      :ok ->
-        render(conn, :show, users: user)
-      :false ->
-        render(conn, :error)
+      case Guardian.decode_and_verify(token, %{"typ" => "access"}) do
+        {:ok, claims} ->
+          Logger.info(claims)
+          user = Accounts.get_users!(Map.get(claims, "sub"))
+          render(conn, :show, users: user)
+        {:error, :token_expired} ->
+          Logger.info("Token expired")
+      end
+    else
+      Logger.error("Authorization header is missing or invalid")
     end
-
-    # Exemple de génération d'un JWT avec Joken
-    claims = %{
-      # ID de l'utilisateur
-      "usrUniqueId" => 1,
-      # Team ID de l'utilisateur
-      "teamUniqueId" => 1,
-      # 30 minutes
-      "exp" => DateTime.to_unix(DateTime.add(DateTime.utc_now(), 1800, :second))
-    }
-
-    header = %{"alg" => "HS256", "typ" => "JWT"}
-
-    encoded_header = :base64.encode(Jason.encode!(header))
-    encoded_claims = :base64.encode(Jason.encode!(claims))
-
-    data_to_sign = "#{encoded_header}.#{encoded_claims}"
-    signature = hmac_sha256(secret_key, data_to_sign) |> :base64.encode()
-
-    token = "#{encoded_header}.#{encoded_claims}.#{signature}"
-
-    render(conn, :token, users: user, token: token)
   end
 
   def create(conn, %{"users" => users_params}) do

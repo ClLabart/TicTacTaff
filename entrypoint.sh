@@ -1,5 +1,4 @@
-sleep 30
-
+#!/bin/bash
 mix ecto.create
 mix ecto.migrate
 

@@ -1,5 +1,6 @@
 defmodule TimeManagerWeb.Router do
   use TimeManagerWeb, :router
+  alias TimeManager.Guardian
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -14,6 +15,14 @@ defmodule TimeManagerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # pipeline :authenticated do
+  #   plug :accepts, ["json"]
+  #   # plug Guardian.Plug.Pipeline, module: TimeManager.Guardian
+  #   # plug Guardian.Plug.VerifySession
+
+  #   # plug Guardian.Plug.VerifyHeader, claims: %{"typ" => "access"}, realm: "Bearer"
+  # end
+
   scope "/", TimeManagerWeb do
     pipe_through :browser
 
@@ -26,8 +35,12 @@ defmodule TimeManagerWeb.Router do
 
     # Connexion
     post "/login", UsersController, :login
-    
+
+    post "/test", UsersController, :test
+
+    pipe_through :authenticated
     resources "/users", UsersController, except: [:new, :edit]
+
     # Changer l'équipe d'un joueur
     put "/users/:id/team/:teamId", UsersController, :change_team
 

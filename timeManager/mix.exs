@@ -19,7 +19,7 @@ defmodule TimeManager.MixProject do
   def application do
     [
       mod: {TimeManager.Application, []},
-      extra_applications: [:logger, :runtime_tools, :crypto, :jose]
+      extra_applications: [:logger, :runtime_tools, :crypto, :jose, :guardian]
     ]
   end
 
@@ -56,7 +56,8 @@ defmodule TimeManager.MixProject do
       {:jose, "~> 1.11"},
       {:comeonin, "~> 5.4"},
       {:argon2_elixir, "~> 4.0"},
-      {:bcrypt_elixir, "~> 3.1.0"}
+      {:bcrypt_elixir, "~> 3.1.0"},
+      {:guardian, "~> 2.0"},
     ]
   end
 

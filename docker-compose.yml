@@ -21,7 +21,7 @@ services:
             PGPORT: 5432
         # command: /entrypoint.sh
         # command: mix phx.server
-        command: mix ecto.migrate
+        # command: mix ecto.migrate
         # Remove for production servers
         # volumes:
         #     - ./timeManager:/app

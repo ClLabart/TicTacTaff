@@ -38,14 +38,14 @@ defmodule TimeManager.Accounts.Users do
 
   defp put_password_hash(changeset), do: changeset
 
-  def verify_user(%{"password" => password} = params) do
-    case Users.get_by(params) do
-      nil ->
-        {:error, "User not found"}
-      user ->
-        Bcrypt.verify_pass(password, user.password)
-    end
-  end
+  # def verify_user(%{"password" => password} = params) do
+  #   case Users.get_by(params) do
+  #     nil ->
+  #       {:error, "User not found"}
+  #     user ->
+  #       Bcrypt.verify_pass(password, user.password)
+  #   end
+  # end
 
   # defp put_password_hash(%Ecto.Changeset{valid?: true, changes: %{password: password}} = changeset) do
   #   change(changeset, Argon2.hash_pwd_salt(password))

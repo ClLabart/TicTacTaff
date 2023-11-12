@@ -18,11 +18,18 @@ defmodule TimeManagerWeb.UsersJSON do
   end
 
   @doc """
+  Returns an error.
+  """
+  def error(%{error: error}) do
+    %{error: error}
+  end
+
+  @doc """
   Renders a single users with it's token.
   """
   def token(%{users: users, token: token}) do
     %{
-      data: for(users <- users, do: data(users)),
+      data: data(users),
       token: token
      }
   end

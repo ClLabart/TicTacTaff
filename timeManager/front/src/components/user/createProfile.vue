@@ -1,7 +1,7 @@
 <template>
   <section class="m-6">
     <header class="mb-6">
-      <h2 class="text-center">Créer un profile</h2>
+      <h2 class="text-center">Créer un profil</h2>
     </header>
     <form @submit.prevent="" class="flex flex-col gap-5">
       <div>

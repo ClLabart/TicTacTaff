@@ -60,10 +60,10 @@
 
   <div v-else class="relative flex justify-around">
     <div v-if="showDay" class="h-72">
-      <bar-chart :chart="chartDataForDay" />
+      <bar-chart :style="'h-full'" :chart="chartDataForDay" />
     </div>
     <div v-if="showWeek" class="h-72">
-      <bar-chart :chart="chartDataForWeek" />
+      <bar-chart :style="'h-full'" :chart="chartDataForWeek" />
     </div>
   </div>
 

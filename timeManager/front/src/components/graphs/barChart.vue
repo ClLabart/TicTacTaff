@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full">
+  <div class="" :class="style">
     <canvas ref="chartCanvas" class=""></canvas>
   </div>
 </template>
@@ -18,6 +18,10 @@ export default {
       type: Object,
       required: true
     },
+    style: {
+      type: String,
+      default: ''
+    }
   },
 
   data() {
